@@ -1,47 +1,72 @@
 import { Link } from "react-router-dom";
 
-
 function Header() {
   return (
-    <header className="p-0 bg-black border-bottom fixed-top">
-      <nav className="container d-flex align-items-center gap-4">
-        {/* Título a la izquierda */}
-        <h1 className="m-0">
-          <Link to="/" className="text-white text-decoration-none">Heartz</Link>
-        </h1>
+    <header id="header" className="header d-flex align-items-center sticky-top">
+      <div className="container-fluid position-relative d-flex align-items-center justify-content-between">
+        <Link to="/" className="logo d-flex align-items-center me-auto me-xl-0">
+          {/* Si quieres usar un logo en imagen */}
+          {/* <img src="assets/img/logo.png" alt="Heartz" /> */}
+          <i className="bi bi-camera" />
+          <h1 className="sitename">Heartz</h1>
+        </Link>
 
-        {/* Links de navegación */}
-        <ul className="d-flex list-unstyled m-0 gap-3">
-          <li>
-            <Link className="nav-link" to="/">Home</Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/Productos">Productos</Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/Nosotros">Nosotros</Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/Blog">Blog</Link>
-          </li>
-          <li>
-            <Link className="nav-link" to="/Contacto">Contacto</Link>
-          </li>
-        </ul>
+        <nav id="navmenu" className="navmenu">
+          <ul>
+            <li>
+              <Link to="/" className="active">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/nosotros">Nosotros</Link>
+            </li>
+            <li>
+              <Link to="/productos">Productos</Link>
+            </li>
+            <li>
+              <Link to="/blog">Blog</Link>
+            </li>
+            <li>
+              <Link to="/contacto">Contacto</Link>
+            </li>
+          </ul>
+          <i className="mobile-nav-toggle d-xl-none bi bi-list" />
+        </nav>
 
-        {/* Íconos sociales + botones de login */}
-        <div className="d-flex align-items-center gap-3 ms-auto">
-          <a href="#" className="social-link"><i className="bi bi-twitter"></i></a>
-          <a href="#" className="social-link"><i className="bi bi-facebook"></i></a>
-          <a href="#" className="social-link"><i className="bi bi-instagram"></i></a>
+        <div className="d-flex align-items-center">
+          <div className="header-social-links me-3">
+            <a href="#" className="twitter">
+              <i className="bi bi-twitter-x" />
+            </a>
+            <a href="#" className="facebook">
+              <i className="bi bi-facebook" />
+            </a>
+            <a href="#" className="instagram">
+              <i className="bi bi-instagram" />
+            </a>
+            <a href="#" className="linkedin">
+              <i className="bi bi-linkedin" />
+            </a>
+          </div>
 
-          {/* Botones de iniciar sesión y registrarse */}
-          <Link to="/Login" className="btn btn-outline-light btn-sm">Iniciar Sesión</Link>
-          <Link to="/Register" className="btn btn-light btn-sm text-dark">Registrarse</Link>
+          {/* Botones de Inicio de Sesión y Registrarse */}
+          <div className="header-buttons">
+            <Link
+              to="/login"
+              className="btn btn-outline-light me-2"
+            >
+              Iniciar Sesión
+            </Link>
+            <Link
+              to="/register"
+              className="btn btn-light"
+            >
+              Registrarse
+            </Link>
+          </div>
         </div>
-      </nav>
-
-
+      </div>
     </header>
   );
 }
