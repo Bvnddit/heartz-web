@@ -3,7 +3,7 @@ import radioheadImg from '../assets/img/default/Radiohead-Tour.webp';
 function DetalleBlog1() {
     return (
         <div className="main-content">
-            <section className="container my-5">
+            <section className="container py-5">
                 <div className="row align-items-center" style={{backgroundColor:'#272727', borderRadius: '50px', padding: '20px'}}>
                     <div className="col-md-6 text-center">
                         <img src={radioheadImg} alt="Tornamesas" className="img-fluid shadow" style={{maxHeight: 500, objectFit: 'cover', borderRadius:'50px'}} />
