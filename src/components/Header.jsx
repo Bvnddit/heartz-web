@@ -13,57 +13,38 @@ function Header() {
 
         <nav id="navmenu" className="navmenu">
           <ul>
-            <li>
-              <Link to="/" className="active">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/nosotros">Nosotros</Link>
-            </li>
-            <li>
-              <Link to="/productos">Productos</Link>
-            </li>
-            <li>
-              <Link to="/blog">Blog</Link>
-            </li>
-            <li>
-              <Link to="/contacto">Contacto</Link>
-            </li>
+            <li><Link to="/" className="active">Home</Link></li>
+            <li><Link to="/nosotros">Nosotros</Link></li>
+            <li><Link to="/productos">Productos</Link></li>
+            <li><Link to="/blog">Blog</Link></li>
+            <li><Link to="/contacto">Contacto</Link></li>
           </ul>
           <i className="mobile-nav-toggle d-xl-none bi bi-list" />
         </nav>
 
         <div className="d-flex align-items-center">
           <div className="header-social-links me-3">
-            <a href="#" className="twitter">
-              <i className="bi bi-twitter-x" />
-            </a>
-            <a href="#" className="facebook">
-              <i className="bi bi-facebook" />
-            </a>
-            <a href="#" className="instagram">
-              <i className="bi bi-instagram" />
-            </a>
-            <a href="#" className="linkedin">
-              <i className="bi bi-linkedin" />
-            </a>
+            <a href="#" className="twitter"><i className="bi bi-twitter-x" /></a>
+            <a href="#" className="facebook"><i className="bi bi-facebook" /></a>
+            <a href="#" className="instagram"><i className="bi bi-instagram" /></a>
+            <a href="#" className="linkedin"><i className="bi bi-linkedin" /></a>
           </div>
+
+          {/* Buscador */}
+          <form className="d-flex me-3" role="search">
+            <input
+              className="form-control me-2"
+              type="search"
+              placeholder="Buscar productos..."
+              aria-label="Buscar"
+            />
+            <button className="btn btn-outline-light" type="submit">Buscar</button>
+          </form>
 
           {/* Botones de Inicio de Sesión y Registrarse */}
           <div className="header-buttons">
-            <Link
-              to="/login"
-              className="btn btn-outline-light me-2"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              to="/register"
-              className="btn btn-light"
-            >
-              Registrarse
-            </Link>
+            <Link to="/login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
+            <Link to="/register" className="btn btn-light">Registrarse</Link>
           </div>
         </div>
       </div>
