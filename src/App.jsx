@@ -7,6 +7,7 @@ import Blog from './pages/Blog.jsx';
 import Contacto from './pages/Contacto.jsx';
 import Header from './components/Header.jsx'
 import Footer from "./components/Footer.jsx";
+import Login from './pages/Login.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -16,13 +17,14 @@ function App() {
       <div className="app-container">
         <Header />
         <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/Productos" element={<Productos />} />
-            <Route path="/Nosotros" element={<Nosotros />} />
-            <Route path="/Blog" element={<Blog />} />
-            <Route path="/Contacto" element={<Contacto />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/Productos" element={<Productos />} />
+              <Route path="/Nosotros" element={<Nosotros />} />
+              <Route path="/Blog" element={<Blog />} />
+              <Route path="/Contacto" element={<Contacto />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
         </div>
         <Footer />
       </div>
