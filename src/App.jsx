@@ -8,6 +8,8 @@ import Contacto from './pages/Contacto.jsx';
 import Header from './components/Header.jsx'
 import Footer from "./components/Footer.jsx";
 import Login from './pages/Login.jsx';
+import DetalleBlog1 from './pages/DetalleBlog1.jsx';
+import DetalleBlog2 from './pages/DetalleBlog2.jsx';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -23,7 +25,9 @@ function App() {
               <Route path="/Nosotros" element={<Nosotros />} />
               <Route path="/Blog" element={<Blog />} />
               <Route path="/Contacto" element={<Contacto />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/Login" element={<Login />} />
+              <Route path="/DetalleBlog1" element={<DetalleBlog1 />} />
+              <Route path="/DetalleBlog2" element={<DetalleBlog2 />} />
             </Routes>
         </div>
         <Footer />

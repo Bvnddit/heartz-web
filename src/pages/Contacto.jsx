@@ -1,10 +1,12 @@
+import tornamesasImg from '../assets/img/default/tornamesas.webp';
+
 function Contacto() {
   return (
     <div style={{backgroundColor:'white'}}>
     <section className="container my-5" style={{backgroundColor:'white'}}>
       <div className="row align-items-center">
         <div className="col-md-6 text-center">
-          <img src="src/assets/img/default/tornamesas.webp" alt="Tornamesas" className="img-fluid shadow" style={{maxHeight: 500, objectFit: 'cover'}} />
+          <img src={tornamesasImg} alt="Tornamesas" className="img-fluid shadow" style={{maxHeight: 500, objectFit: 'cover'}} />
         </div>
         <div className="col-md-6">
           <h1 className="jumbotron-heading mb-3" style={{color:'black'}}>¡Contáctanos!</h1>
