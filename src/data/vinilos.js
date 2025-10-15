@@ -1,0 +1,11 @@
+export const vinilos = [
+  { id_vin: 1, titulo: "Saturday Night Wrist", id_art: 1, id_gen: 4, año: 2006, precio: 44900, img: "/assets/img/albums/deftones/saturday-night-wrist-cover.jpg" },
+  { id_vin: 2, titulo: "Blonde", id_art: 2, id_gen: 2, año: 2016, precio: 49900, img: "/assets/img/albums/frank-ocean/blonde-cover.jpg" },
+  { id_vin: 3, titulo: "The Bends", id_art: 3, id_gen: 3, año: 1995, precio: 45900, img: "/assets/img/albums/radiohead/the-bends-cover.jpg" },
+  { id_vin: 4, titulo: "Imaginal Disk", id_art: 4, id_gen: 5, año: 2021, precio: 39900, img: "/assets/img/albums/magdalena-bay/imaginal-disk-cover.jpg" },
+  { id_vin: 5, titulo: "La Espada y La Pared", id_art: 5, id_gen: 3, año: 1995, precio: 42900, img: "/assets/img/albums/los-tres/la-espada-y-la-pared-cover.jpg" },
+  { id_vin: 6, titulo: "Casiopea", id_art: 6, id_gen: 1, año: 1979, precio: 47900, img: "/assets/img/albums/casiopea/casiopea-cover.jpg" },
+  { id_vin: 7, titulo: "Thriller", id_art: 7, id_gen: 6, año: 1982, precio: 54900, img: "/assets/img/albums/michael-jackson/thriller-cover.jpg" },
+  { id_vin: 8, titulo: "The Dark Side of the Moon", id_art: 8, id_gen: 7, año: 1973, precio: 59900, img: "/assets/img/albums/pink-floyd/dark-side-of-the-moon-cover.jpg" },
+  { id_vin: 9, titulo: "Whole Lotta Red", id_art: 9, id_gen: 8, año: 2020, precio: 42900, img: "/assets/img/albums/playboi-carti/whole-lotta-red-cover.jpg" }
+];
