@@ -1,46 +1,91 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { vinilos } from "../Data/vinilos";
 import { artistas } from "../Data/artistas";
 import { generos } from "../Data/generos";
+import "../assets/css/main.css";
 
 const ProductosDetalles = () => {
-  const { id_vin } = useParams(); // obtiene el id del vinilo desde la URL
+  const { id_vin } = useParams();
   const navigate = useNavigate();
 
   const vinilo = vinilos.find((v) => v.id_vin === parseInt(id_vin));
   if (!vinilo) return <p>Vinilo no encontrado</p>;
 
-  const getArtista = (id_art) => artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
-  const getGenero = (id_gen) => generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
+  const [imgIndex, setImgIndex] = useState(0);
+
+  // Cambio automático cada 3 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setImgIndex((prev) => (prev + 1) % vinilo.img.length);
+    }, 3000); // 3000 ms = 3s
+    return () => clearInterval(interval); // limpiar al desmontar
+  }, [vinilo.img.length]);
+
+  const getArtista = (id_art) =>
+    artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
+  const getGenero = (id_gen) =>
+    generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
 
   return (
-    <div className="container my-5">
-      <button className="btn btn-secondary mb-4" onClick={() => navigate(-1)}>← Volver</button>
-      <div className="row">
-        <div className="col-md-5">
-          <img src={vinilo.img} alt={vinilo.titulo} className="img-fluid rounded shadow-sm" />
-        </div>
-        <div className="col-md-7">
-          <h2>{vinilo.titulo}</h2>
-          <p><strong>Artista:</strong> {getArtista(vinilo.id_art)}</p>
-          <p><strong>Género:</strong> {getGenero(vinilo.id_gen)}</p>
-          <p><strong>Formato:</strong> {vinilo.formato} — {vinilo.colorVinilo}</p>
-          <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
-          <p><strong>Edición:</strong> {vinilo.edicion}</p>
-          <p><strong>Sello:</strong> {vinilo.sello}</p>
-          <p><strong>País:</strong> {vinilo.pais}</p>
-          <p className="mt-3">{vinilo.descripcion}</p>
+    <div className="producto-detalle blanco-degradado-background py-5 px-4">
+      <div className="container-lg">
+        <button className="btn btn-outline-light mb-4" onClick={() => navigate(-1)}>
+          ← Volver
+        </button>
 
-          <button className="btn btn-success mt-3">Añadir al carrito</button>
+        <div className="row g-4">
+          {/* Columna izquierda: Imagen principal + miniaturas */}
+          <div className="col-md-5 text-center d-flex">
+            <div className="flex-grow-1">
+              <img
+                src={vinilo.img[imgIndex]}
+                alt={`${vinilo.titulo} ${imgIndex + 1}`}
+                className="img-fluid rounded-4 shadow mb-3"
+              />
+            </div>
 
-          <h5 className="mt-4">Lista de canciones:</h5>
-          <ul>
-            {vinilo.listaDeCanciones?.map((cancion, index) => (
-              <li key={index}>{cancion}</li>
-            ))}
-          </ul>
+            {/* Miniaturas verticales */}
+            <div className="d-flex flex-column ms-3">
+              {vinilo.img.map((imagen, index) => (
+                <img
+                  key={index}
+                  src={imagen}
+                  alt={`mini ${index + 1}`}
+                  className={`rounded shadow-sm mb-2 ${imgIndex === index ? "border border-light" : ""}`}
+                  style={{ width: "60px", cursor: "pointer" }}
+                  onClick={() => setImgIndex(index)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Columna derecha: Detalles + lista de canciones */}
+          <div className="col-md-7 text-light">
+            <h2 className="fw-bold mb-3">{vinilo.titulo}</h2>
+            <p><strong>Artista:</strong> {getArtista(vinilo.id_art)}</p>
+            <p><strong>Género:</strong> {getGenero(vinilo.id_gen)}</p>
+            <p><strong>Formato:</strong> {vinilo.formato} — {vinilo.colorVinilo}</p>
+            <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
+            <p><strong>Edición:</strong> {vinilo.edicion}</p>
+            <p><strong>Sello:</strong> {vinilo.sello}</p>
+            <p><strong>País:</strong> {vinilo.pais}</p>
+            {vinilo.duracion && <p><strong>Duración total:</strong> {vinilo.duracion} minutos</p>}
+
+            <div className="mt-4 d-flex gap-3">
+              <button className="btn btn-outline-light px-4">Comprar ahora</button>
+              <button className="btn btn-success px-4">Añadir al carrito</button>
+            </div>
+
+            <h5 className="mt-4">Lista de canciones</h5>
+            <ul className="list-unstyled">
+              {vinilo.listaDeCanciones.map((cancion, index) => (
+                <li key={index}>- {cancion}</li>
+              ))}
+            </ul>
 
 
+          </div>
         </div>
       </div>
     </div>

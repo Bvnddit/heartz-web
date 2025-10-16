@@ -12,8 +12,15 @@ export const vinilos = [
     sello: "Maverick Records",
     pais: "EE.UU.",
     edicion: "Original",
-    descripcion: "El quinto álbum de Deftones mezcla metal alternativo con atmósferas etéreas, consolidando su sonido más experimental.",
-    img: new URL("../assets/img/albums/deftones/saturday-night-wrist-cover.jpg", import.meta.url).href,
+    duracion: "61:36",
+    descripcion:
+      "El quinto álbum de Deftones mezcla metal alternativo con atmósferas etéreas, consolidando su sonido más experimental.",
+    img: [
+      new URL("../assets/img/albums/deftones/saturday-night-wrist-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/deftones/saturday-night-wrist-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/deftones/saturday-night-wrist-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/deftones/saturday-night-wrist-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Hole in the Earth",
       "Rapture",
@@ -27,7 +34,7 @@ export const vinilos = [
       "Combat",
       "Kimdracula",
       "Riviere",
-      "Anniversary of an Uninteresting Event"
+      "Anniversary of an Uninteresting Event",
     ],
   },
   {
@@ -43,8 +50,16 @@ export const vinilos = [
     sello: "Boys Don’t Cry",
     pais: "EE.UU.",
     edicion: "Edición Limitada",
-    descripcion: "Obra maestra introspectiva de Frank Ocean, fusionando R&B, soul y electrónica con letras profundamente personales.",
-    img: new URL("../assets/img/albums/frank-ocean/blonde-cover.jpg", import.meta.url).href,
+    duracion: "60:08",
+    descripcion:
+      "Obra maestra introspectiva de Frank Ocean, fusionando R&B, soul y electrónica con letras profundamente personales.",
+    img: [
+      new URL("../assets/img/albums/frank-ocean/blonde-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/frank-ocean/blonde-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/frank-ocean/blonde-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/frank-ocean/blonde-vinyl1b.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/frank-ocean/blonde-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Nikes",
       "Ivy",
@@ -62,7 +77,7 @@ export const vinilos = [
       "White Ferrari",
       "Seigfried",
       "Godspeed",
-      "Futura Free"
+      "Futura Free",
     ],
   },
   {
@@ -78,8 +93,15 @@ export const vinilos = [
     sello: "Parlophone",
     pais: "Reino Unido",
     edicion: "Original",
-    descripcion: "El segundo álbum de Radiohead marca su transición hacia un sonido más emocional y alternativo con himnos inolvidables.",
-    img: new URL("../assets/img/albums/radiohead/the-bends-cover.jpg", import.meta.url).href,
+    duracion: "48:37",
+    descripcion:
+      "El segundo álbum de Radiohead marca su transición hacia un sonido más emocional y alternativo con himnos inolvidables.",
+    img: [
+      new URL("../assets/img/albums/radiohead/the-bends-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/radiohead/the-bends-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/radiohead/the-bends-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/radiohead/the-bends-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Planet Telex",
       "The Bends",
@@ -92,7 +114,7 @@ export const vinilos = [
       "Bulletproof... I Wish I Was",
       "Black Star",
       "Sulk",
-      "Street Spirit (Fade Out)"
+      "Street Spirit (Fade Out)",
     ],
   },
   {
@@ -108,8 +130,13 @@ export const vinilos = [
     sello: "Luminelle Recordings",
     pais: "EE.UU.",
     edicion: "Original",
-    descripcion: "El dúo Magdalena Bay entrega un viaje synthpop futurista lleno de energía, melodías pegadizas y producción impecable.",
-    img: new URL("../assets/img/albums/magdalena-bay/imaginal-disk-cover.jpg", import.meta.url).href,
+    duracion: "44:23",
+    descripcion:
+      "El dúo Magdalena Bay entrega un viaje synthpop futurista lleno de energía, melodías pegadizas y producción impecable.",
+    img: [
+      new URL("../assets/img/albums/magdalena-bay/imaginal-disk-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/magdalena-bay/imaginal-disk-back.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "She Looked Like Me!",
       "Killing Time",
@@ -122,7 +149,7 @@ export const vinilos = [
       "That's My Floor",
       "Cry for Me",
       "Angel on a Satellite",
-      "The Ballad of Matt & Mica"
+      "The Ballad of Matt & Mica",
     ],
   },
   {
@@ -138,8 +165,15 @@ export const vinilos = [
     sello: "EMI Odeón Chile",
     pais: "Chile",
     edicion: "Original",
-    descripcion: "Considerado uno de los mejores discos chilenos de los 90, Los Tres mezclan rock, blues y tonadas criollas con identidad única.",
-    img: new URL("../assets/img/albums/los-tres/la-espada-y-la-pared-cover.jpg", import.meta.url).href,
+    duracion: "46:05",
+    descripcion:
+      "Considerado uno de los mejores discos chilenos de los 90, Los Tres mezclan rock, blues y tonadas criollas con identidad única.",
+    img: [
+      new URL("../assets/img/albums/los-tres/la-espada-y-la-pared-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/los-tres/la-espada-y-la-pared-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/los-tres/la-espada-y-la-pared-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/los-tres/la-espada-y-la-pared-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Déjate Caer",
       "Hojas de Té",
@@ -150,7 +184,7 @@ export const vinilos = [
       "Partir de Cero",
       "Moizefala",
       "V & V",
-      "Me Rompió el Corazón"
+      "Me Rompió el Corazón",
     ],
   },
   {
@@ -166,8 +200,16 @@ export const vinilos = [
     sello: "Alfa Records",
     pais: "Japón",
     edicion: "Original",
-    descripcion: "Debut de la legendaria banda japonesa de jazz-fusion Casiopea, con técnica impecable y un sonido adelantado a su época.",
-    img: new URL("../assets/img/albums/casiopea/casiopea-cover.jpg", import.meta.url).href,
+    duracion: "42:28",
+    descripcion:
+      "Debut de la legendaria banda japonesa de jazz-fusion Casiopea, con técnica impecable y un sonido adelantado a su época.",
+    img: [
+      new URL("../assets/img/albums/casiopea/casiopea-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/casiopea/casiopea-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/casiopea/casiopea-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/casiopea/casiopea-vinyl2.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/casiopea/casiopea-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Asayake",
       "Midnight Rendezvous",
@@ -175,7 +217,7 @@ export const vinilos = [
       "Time Limit",
       "The End of Asia",
       "Space Road",
-      "Galactic Funk"
+      "Galactic Funk",
     ],
   },
   {
@@ -191,8 +233,15 @@ export const vinilos = [
     sello: "Epic Records",
     pais: "EE.UU.",
     edicion: "Remaster 2016",
-    descripcion: "El álbum más vendido de la historia, con clásicos inmortales como ‘Billie Jean’, ‘Beat It’ y ‘Thriller’.",
-    img: new URL("../assets/img/albums/michael-jackson/thriller-cover.jpg", import.meta.url).href,
+    duracion: "42:19",
+    descripcion:
+      "El álbum más vendido de la historia, con clásicos inmortales como ‘Billie Jean’, ‘Beat It’ y ‘Thriller’.",
+    img: [
+      new URL("../assets/img/albums/michael-jackson/thriller-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/michael-jackson/thriller-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/michael-jackson/thriller-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/michael-jackson/thriller-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Wanna Be Startin' Somethin'",
       "Baby Be Mine",
@@ -202,7 +251,7 @@ export const vinilos = [
       "Billie Jean",
       "Human Nature",
       "P.Y.T. (Pretty Young Thing)",
-      "The Lady in My Life"
+      "The Lady in My Life",
     ],
   },
   {
@@ -218,8 +267,15 @@ export const vinilos = [
     sello: "Harvest Records",
     pais: "Reino Unido",
     edicion: "Remaster 2011",
-    descripcion: "Obra conceptual de Pink Floyd que redefinió el rock progresivo con una experiencia sonora única e inmersiva.",
-    img: new URL("../assets/img/albums/pink-floyd/the-dark-side-of-the-moon-cover.jpg", import.meta.url).href,
+    duracion: "42:49",
+    descripcion:
+      "Obra conceptual de Pink Floyd que redefinió el rock progresivo con una experiencia sonora única e inmersiva.",
+    img: [
+      new URL("../assets/img/albums/pink-floyd/the-dark-side-of-the-moon-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/pink-floyd/the-dark-side-of-the-moon-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/pink-floyd/the-dark-side-of-the-moon-vinyl1.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/pink-floyd/the-dark-side-of-the-moon-img1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Speak to Me",
       "Breathe",
@@ -230,7 +286,7 @@ export const vinilos = [
       "Us and Them",
       "Any Colour You Like",
       "Brain Damage",
-      "Eclipse"
+      "Eclipse",
     ],
   },
   {
@@ -246,8 +302,14 @@ export const vinilos = [
     sello: "Interscope Records",
     pais: "EE.UU.",
     edicion: "Original",
-    descripcion: "Playboi Carti entrega un sonido experimental y caótico que marcó una nueva era en el trap alternativo.",
-    img: new URL("../assets/img/albums/playboi-carti/whole-lotta-red-cover.jpg", import.meta.url).href,
+    duracion: "62:15",
+    descripcion:
+      "Playboi Carti entrega un sonido experimental y caótico que marcó una nueva era en el trap alternativo.",
+    img: [
+      new URL("../assets/img/albums/playboi-carti/whole-lotta-red-cover.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/playboi-carti/whole-lotta-red-back.jpg", import.meta.url).href,
+      new URL("../assets/img/albums/playboi-carti/whole-lotta-red-vinyl1.jpg", import.meta.url).href,
+    ],
     listaDeCanciones: [
       "Rockstar Made",
       "Go2DaMoon",
@@ -269,7 +331,7 @@ export const vinilos = [
       "Not Playing",
       "Die For Guy",
       "C.O.U.P.",
-      "F33l Lik3 Dyin (Pt. 2)"
+      "F33l Lik3 Dyin (Pt. 2)",
     ],
   },
 ];

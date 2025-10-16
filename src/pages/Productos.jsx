@@ -10,12 +10,12 @@ const Productos = () => {
   const getGenero = (id_gen) => generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
 
   const handleVer = (vinilo) => {
-    // Animación suave antes de navegar
+
     const card = document.getElementById(`vinilo-${vinilo.id_vin}`);
     card.classList.add("fade-out");
     setTimeout(() => {
       navigate(`/productos/${vinilo.id_vin}`);
-    }, 300); // espera 300ms para la animación
+    }, 300); 
   };
 
   const handleAñadir = (vinilo) => {
@@ -31,7 +31,7 @@ const Productos = () => {
           <div key={vinilo.id_vin} id={`vinilo-${vinilo.id_vin}`} className="col-md-4 mb-4">
             <div className="card h-100 shadow-sm">
               <img
-                src={vinilo.img}
+                src={vinilo.img[0]}
                 className="card-img-top"
                 alt={vinilo.titulo}
                 style={{ cursor: "pointer" }}

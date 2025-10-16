@@ -1412,3 +1412,17 @@ section,
   to { opacity: 0; transform: scale(0.95); }
 }
 
+.blanco-degradado-background {
+background-color: #121212;
+
+}
+
+.carrusel-vinilo {
+  width: 200px; /* o el tamaño que quieras */
+  flex-shrink: 0; /* evita que se achique */
+}
+
+.lista-canciones {
+  flex-grow: 1;
+}
+
