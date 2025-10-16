@@ -1,72 +1,55 @@
 import React, { useState } from "react";
+import { validarEmail, validarPassword, validarNombre, validarRut } from "../util/Validaciones.js";
 
 function Registro() {
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
   const [rut, setRut] = useState("");
-  const [rutError, setRutError] = useState("");
   const [nombre, setNombre] = useState("");
-  const [nombreError, setNombreError] = useState("");
   const [password, setPassword] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+
+  const [emailError, setEmailError] = useState("");
+  const [rutError, setRutError] = useState("");
+  const [nombreError, setNombreError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
-  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  const rutRegex = /^\d{7,8}-[Kk\d]$/;
-  const textRegex = /^(?!\s*$).+/;
-  const passwordRegex = /^(?!\s*$).+/;
-
-  const today = new Date();
-  const eighteenYearsAgo = new Date(
-    today.getFullYear() - 18,
-    today.getMonth(),
-    today.getDate()
-  );
-  const maxDate = eighteenYearsAgo.toISOString().split("T")[0];
+  const [fechaError, setFechaError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let hasError = false;
 
-    if (!emailRegex.test(email)) {
-      setEmailError("Por favor, ingresa un correo electrónico válido.");
-      hasError = true;
+    const emailErr = validarEmail(email);
+    const rutErr = validarRut(rut);
+    const nombreErr = validarNombre(nombre);
+    const passwordErr = validarPassword(password);
+
+    let fechaErr = "";
+    if (!fechaNacimiento) {
+      fechaErr = "Por favor, selecciona tu fecha de nacimiento.";
     } else {
-      setEmailError("");
+      const hoy = new Date();
+      const fecha18 = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+      if (new Date(fechaNacimiento) > fecha18) {
+        fechaErr = "Debes ser mayor de 18 años.";
+      }
     }
 
-    if (!rutRegex.test(rut)) {
-      setRutError("Por favor, ingresa el RUT con guion y sin puntos.");
-      hasError = true;
-    } else {
-      setRutError("");
-    }
+    setEmailError(emailErr);
+    setRutError(rutErr);
+    setNombreError(nombreErr);
+    setPasswordError(passwordErr);
+    setFechaError(fechaErr);
 
-    if (!textRegex.test(nombre)) {
-      setNombreError("El nombre no puede estar vacío.");
-      hasError = true;
-    } else {
-      setNombreError("");
-    }
+    if (emailErr || rutErr || nombreErr || passwordErr || fechaErr) return;
 
-    if (!passwordRegex.test(password)) {
-      setPasswordError("La contraseña debe contener al menos 8 caracteres, incluyendo mayúsculas, minúsculas y números.");
-      hasError = true;
-    } else {
-      setPasswordError("");
-    }
-
-    if (hasError) return;
+    alert("Registro exitoso.");
   };
 
+  const hoy = new Date();
+  const maxDate = `${hoy.getFullYear() - 18}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+
   return (
-    <div
-      className="main-content"
-      style={{ background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)" }}
-    >
-      <div
-        className="container d-flex justify-content-center align-items-center"
-        style={{ paddingTop: 50 }}
-      >
+    <div className="main-content" style={{ background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)" }}>
+      <div className="container d-flex justify-content-center align-items-center" style={{ paddingTop: 50 }}>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -91,91 +74,69 @@ function Registro() {
             <input
               type="email"
               className="form-control form-control-sm"
-              id="floatingInput"
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={{ borderColor: emailError ? "red" : "" }}
             />
-            <label htmlFor="floatingInput">Correo Electrónico</label>
-            {emailError && (
-              <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-                {emailError}
-              </div>
-            )}
+            <label>Correo Electrónico</label>
+            {emailError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{emailError}</div>}
           </div>
 
           <div className="form-floating mb-3">
             <input
               type="text"
               className="form-control form-control-sm"
-              id="floatingRut"
-              placeholder="Rut"
+              placeholder="RUT"
               value={rut}
               onChange={(e) => setRut(e.target.value)}
               style={{ borderColor: rutError ? "red" : "" }}
             />
-            <label htmlFor="floatingRut">RUT</label>
-            {rutError && (
-              <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-                {rutError}
-              </div>
-            )}
+            <label>RUT</label>
+            {rutError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{rutError}</div>}
           </div>
 
           <div className="form-floating mb-3">
             <input
               type="text"
               className="form-control form-control-sm"
-              id="floatingName"
               placeholder="Nombre completo"
-              autoComplete="off"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               style={{ borderColor: nombreError ? "red" : "" }}
             />
-            <label htmlFor="floatingName">Nombre completo</label>
-            {nombreError && (
-              <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-                {nombreError}
-              </div>
-            )}
+            <label>Nombre completo</label>
+            {nombreError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{nombreError}</div>}
           </div>
 
           <div className="form-floating mb-3">
             <input
               type="date"
               className="form-control form-control-sm"
-              id="floatingDate"
               placeholder="Fecha de nacimiento"
-              autoComplete="off"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
               max={maxDate}
+              style={{ borderColor: fechaError ? "red" : "" }}
             />
-            <label htmlFor="floatingDate">Fecha de nacimiento</label>
+            <label>Fecha de nacimiento</label>
+            {fechaError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{fechaError}</div>}
           </div>
 
           <div className="form-floating mb-4">
             <input
               type="password"
               className="form-control form-control-sm"
-              id="floatingPassword"
               placeholder="Contraseña"
-              autoComplete="off"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{ borderColor: passwordError ? "red" : "" }}
             />
-            <label htmlFor="floatingPassword">Contraseña</label>
-            {passwordError && (
-              <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>
-                {passwordError}
-              </div>
-            )}
+            <label>Contraseña</label>
+            {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
           </div>
 
-          <button type="submit" className="btn btn-outline-primary w-100">
-            Registrarse
-          </button>
+          <button type="submit" className="btn btn-outline-primary w-100">Registrarse</button>
         </form>
       </div>
     </div>
