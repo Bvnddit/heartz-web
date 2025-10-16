@@ -44,7 +44,7 @@ function Header() {
           {/* Botones de Inicio de Sesión y Registrarse */}
           <div className="header-buttons">
             <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
-            <Link to="/Register" className="btn btn-light">Registrarse</Link>
+            <Link to="/Registro" className="btn btn-light">Registrarse</Link>
           </div>
         </div>
       </div>

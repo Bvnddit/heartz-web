@@ -9,6 +9,7 @@ import Nosotros from "./pages/Nosotros";
 import Blog from "./pages/Blog";
 import Contacto from "./pages/Contacto";
 import Login from "./pages/Login";
+import Registro from "./pages/Registro";
 import DetalleBlog1 from "./pages/DetalleBlog1";
 import DetalleBlog2 from "./pages/DetalleBlog2";
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/Blog" element={<Blog />} />
             <Route path="/Contacto" element={<Contacto />} />
             <Route path="/Login" element={<Login />} />
+            <Route path="/Registro" element={<Registro />} />
             <Route path="/DetalleBlog1" element={<DetalleBlog1 />} />
             <Route path="/DetalleBlog2" element={<DetalleBlog2 />} />
           </Routes>
