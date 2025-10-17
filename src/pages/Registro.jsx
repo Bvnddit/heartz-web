@@ -41,7 +41,6 @@ function Registro() {
 
     if (emailErr || rutErr || nombreErr || passwordErr || fechaErr) return;
 
-    alert("Registro exitoso.");
   };
 
   const hoy = new Date();

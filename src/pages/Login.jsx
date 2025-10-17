@@ -18,7 +18,6 @@ function Login() {
 
     if (emailErr || passwordErr) return;
 
-    alert("Inicio de sesión exitoso.");
   };
 
   return (

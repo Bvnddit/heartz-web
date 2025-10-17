@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './assets/css/main.css'
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Productos from "./pages/Productos";
-import ProductosDetalles from "./pages/ProductosDetalles"; // <- Importa la página de detalle
+import ProductosDetalles from "./pages/ProductosDetalles";
 import Nosotros from "./pages/Nosotros";
 import Blog from "./pages/Blog";
 import Contacto from "./pages/Contacto";
@@ -12,28 +12,42 @@ import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import DetalleBlog1 from "./pages/DetalleBlog1";
 import DetalleBlog2 from "./pages/DetalleBlog2";
+import Admin from "./pages/Admin";
+
+function AppContent() {
+  const location = useLocation();
+
+  const hideHeaderRoutes = ['/admin'];
+
+  const shouldHideHeader = hideHeaderRoutes.some(path => location.pathname.startsWith(path));
+
+  return (
+    <div className="app-container">
+      {!shouldHideHeader && <Header />}
+      <div className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/productos" element={<Productos />} />
+          <Route path="/productos/:id_vin" element={<ProductosDetalles />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/contacto" element={<Contacto />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
+          <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </div>
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router basename="/heartz-web">
-      <div className="app-container">
-        <Header />
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<Productos />} /> {/* ruta productos */}
-            <Route path="/productos/:id_vin" element={<ProductosDetalles />} /> {/* ruta detalle vinilo */}
-            <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/contacto" element={<Contacto />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
-            <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
-          </Routes>
-        </div>
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }
