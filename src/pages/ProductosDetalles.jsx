@@ -66,12 +66,11 @@ const ProductosDetalles = () => {
             <p><strong>Artista:</strong> {getArtista(vinilo.id_art)}</p>
             <p><strong>Género:</strong> {getGenero(vinilo.id_gen)}</p>
             <p><strong>Formato:</strong> {vinilo.formato} — {vinilo.colorVinilo}</p>
-            <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
             <p><strong>Edición:</strong> {vinilo.edicion}</p>
             <p><strong>Sello:</strong> {vinilo.sello}</p>
             <p><strong>País:</strong> {vinilo.pais}</p>
             {vinilo.duracion && <p><strong>Duración total:</strong> {vinilo.duracion} minutos</p>}
-
+            <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
             <div className="mt-4 d-flex gap-3">
               <button className="btn btn-outline-light px-4">Comprar ahora</button>
               <button className="btn btn-success px-4">Añadir al carrito</button>

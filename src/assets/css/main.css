@@ -1413,8 +1413,7 @@ section,
 }
 
 .blanco-degradado-background {
-background-color: #121212;
-
+                background: 'linear-gradient(135deg, #1c1c1c, #2a1c3b)', 
 }
 
 .carrusel-vinilo {
