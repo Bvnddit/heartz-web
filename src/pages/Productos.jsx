@@ -4,6 +4,8 @@ import { vinilos as vinilosBase } from "../data/vinilos";
 import { artistas as artistasBase } from "../data/artistas";
 import { generos as generosBase } from "../data/generos";
 import { CarritoContext } from "../context/CarritoContext.jsx"; 
+import { filtrarPorGenero, filtrarPorArtista, ordenarPorPrecio } from "../util/Validaciones";
+
 
 const Productos = () => {
   const navigate = useNavigate();
@@ -44,31 +46,68 @@ const Productos = () => {
   };
 
   const handleAñadir = (vinilo) => {
-    agregarProducto(vinilo); // <-- agregamos al carrito
+    agregarProducto(vinilo);
     alert(`Añadido al carrito: ${vinilo.titulo}`);
   };
 
-  let vinilosFiltrados = vinilos.filter((v) =>
-    filtroGenero === "todos" ? true : v.id_gen.toString() === filtroGenero
-  );
-  vinilosFiltrados = vinilosFiltrados.filter((v) =>
-    filtroArtista === "todos" ? true : v.id_art.toString() === filtroArtista
-  );
-
-  vinilosFiltrados.sort((a, b) => {
-    if (ordenPrecio === "asc") return a.precio - b.precio;
-    if (ordenPrecio === "desc") return b.precio - a.precio;
-    return 0;
-  });
+// --- FILTROS ---
+let vinilosFiltrados = filtrarPorGenero(vinilos, filtroGenero);
+vinilosFiltrados = filtrarPorArtista(vinilosFiltrados, filtroArtista);
+vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
 
   return (
     <div className="container my-5">
       <h2 className="text-center mb-4">Nuestros Vinilos</h2>
 
-      {/* Barra de filtros */}
-      {/* ... Aquí va exactamente igual ... */}
+      {/*  Barra de filtros */}
+      <div className="row mb-4 g-3 justify-content-center">
+        <div className="col-md-3">
+          <label className="form-label fw-bold">Filtrar por género:</label>
+          <select
+            className="form-select"
+            value={filtroGenero}
+            onChange={(e) => setFiltroGenero(e.target.value)}
+          >
+            <option value="todos">Todos</option>
+            {generos.map((g) => (
+              <option key={g.id_gen} value={g.id_gen}>
+                {g.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Tarjetas de vinilos */}
+        <div className="col-md-3">
+          <label className="form-label fw-bold">Filtrar por artista:</label>
+          <select
+            className="form-select"
+            value={filtroArtista}
+            onChange={(e) => setFiltroArtista(e.target.value)}
+          >
+            <option value="todos">Todos</option>
+            {artistas.map((a) => (
+              <option key={a.id_art} value={a.id_art}>
+                {a.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="col-md-3">
+          <label className="form-label fw-bold">Ordenar por precio:</label>
+          <select
+            className="form-select"
+            value={ordenPrecio}
+            onChange={(e) => setOrdenPrecio(e.target.value)}
+          >
+            <option value="ninguno">Sin orden</option>
+            <option value="asc">Menor a mayor</option>
+            <option value="desc">Mayor a menor</option>
+          </select>
+        </div>
+      </div>
+
+      {/*  Tarjetas de vinilos */}
       <div className="row">
         {vinilosFiltrados.length > 0 ? (
           vinilosFiltrados.map((vinilo) => (
@@ -85,7 +124,11 @@ const Productos = () => {
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   />
                 ) : (
-                  <div className="bg-secondary text-white d-flex align-items-center justify-content-center" style={{height: "200px", cursor: "pointer"}} onClick={() => handleVer(vinilo)}>
+                  <div
+                    className="bg-secondary text-white d-flex align-items-center justify-content-center"
+                    style={{ height: "200px", cursor: "pointer" }}
+                    onClick={() => handleVer(vinilo)}
+                  >
                     Sin imagen
                   </div>
                 )}
@@ -99,10 +142,16 @@ const Productos = () => {
                 </div>
 
                 <div className="card-footer bg-transparent border-0 d-flex justify-content-center gap-2">
-                  <button className="btn btn-outline-primary btn-sm" onClick={() => handleVer(vinilo)}>
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => handleVer(vinilo)}
+                  >
                     Ver
                   </button>
-                  <button className="btn btn-outline-success btn-sm" onClick={() => handleAñadir(vinilo)}>
+                  <button
+                    className="btn btn-outline-success btn-sm"
+                    onClick={() => handleAñadir(vinilo)}
+                  >
                     Añadir al carrito
                   </button>
                 </div>

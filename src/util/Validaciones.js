@@ -24,7 +24,7 @@ export const validarRut = (rut) => {
 
 // Funciones para filtrar en productos
 import { artistas } from "../data/artistas";
-import { generos } from "../Data/generos";
+import { generos } from "../data/generos";
 
 
 export const getArtista = (id_art) => {
