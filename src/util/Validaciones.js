@@ -16,10 +16,32 @@ export const validarNombre = (nombre) => {
 };
 
 export const validarRut = (rut) => {
+  // Verifica formato básico
   const rutRegex = /^\d{7,8}-[Kk\d]$/;
   if (!rutRegex.test(rut)) return "Por favor, ingresa el RUT con guion y sin puntos.";
+
+  // Separar número y dígito verificador
+  const [numero, dv] = rut.split("-");
+  let suma = 0;
+  let multiplo = 2;
+
+  for (let i = numero.length - 1; i >= 0; i--) {
+    suma += parseInt(numero[i], 10) * multiplo;
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+
+  const dvEsperado = 11 - (suma % 11);
+  let dvCalculado = "";
+
+  if (dvEsperado === 11) dvCalculado = "0";
+  else if (dvEsperado === 10) dvCalculado = "K";
+  else dvCalculado = dvEsperado.toString();
+
+  if (dv.toUpperCase() !== dvCalculado) return "RUT inválido (dígito verificador incorrecto).";
+
   return "";
 };
+
 
 
 // Funciones para filtrar en productos

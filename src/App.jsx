@@ -21,6 +21,7 @@ import Compra from "./pages/Compra.jsx";
 import Compraok from "./pages/Compra-ok.jsx";
 import AdminPerfil from "./pages/AdminPerfil.jsx";
 import AdminReportes from "./pages/AdminReportes.jsx";
+import AdminUsuarios from "./pages/AdminUsuarios.jsx";
  
 function AppContent() {
   const location = useLocation();
@@ -54,6 +55,7 @@ function AppContent() {
           <Route path="/admin-generos" element={<AdminGeneros />} />
           <Route path="/admin-perfil" element={<AdminPerfil />} />
           <Route path="/admin-reportes" element={<AdminReportes />} />
+          <Route path="/admin-usuarios" element={<AdminUsuarios />} />
         </Routes>
       </div>
       <Footer />
