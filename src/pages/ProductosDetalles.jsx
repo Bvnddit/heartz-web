@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { vinilos } from "../data/vinilos";
 import { artistas } from "../data/artistas";
 import { generos } from "../data/generos";
 import "../assets/css/main.css";
+import { CarritoContext } from "../context/CarritoContext.jsx"; // <-- contexto
 
 const ProductosDetalles = () => {
+  const { agregarProducto } = useContext(CarritoContext); // <-- usar contexto
   const { id_vin } = useParams();
   const navigate = useNavigate();
 
@@ -14,18 +16,22 @@ const ProductosDetalles = () => {
 
   const [imgIndex, setImgIndex] = useState(0);
 
-  // Cambio automático cada 3 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setImgIndex((prev) => (prev + 1) % vinilo.img.length);
-    }, 3000); // 3000 ms = 3s
-    return () => clearInterval(interval); // limpiar al desmontar
+    }, 3000);
+    return () => clearInterval(interval);
   }, [vinilo.img.length]);
 
   const getArtista = (id_art) =>
     artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
   const getGenero = (id_gen) =>
     generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
+
+  const handleAñadir = () => {
+    agregarProducto(vinilo); // <-- agregamos al carrito
+    alert(`Añadido al carrito: ${vinilo.titulo}`);
+  };
 
   return (
     <div className="producto-detalle blanco-degradado-background py-5 px-4">
@@ -35,7 +41,6 @@ const ProductosDetalles = () => {
         </button>
 
         <div className="row g-4">
-          {/* Columna izquierda: Imagen principal + miniaturas */}
           <div className="col-md-5 text-center d-flex">
             <div className="flex-grow-1">
               <img
@@ -45,7 +50,6 @@ const ProductosDetalles = () => {
               />
             </div>
 
-            {/* Miniaturas verticales */}
             <div className="d-flex flex-column ms-3">
               {vinilo.img.map((imagen, index) => (
                 <img
@@ -60,7 +64,6 @@ const ProductosDetalles = () => {
             </div>
           </div>
 
-          {/* Columna derecha: Detalles + lista de canciones */}
           <div className="col-md-7 text-light">
             <h2 className="fw-bold mb-3">{vinilo.titulo}</h2>
             <p><strong>Artista:</strong> {getArtista(vinilo.id_art)}</p>
@@ -73,7 +76,9 @@ const ProductosDetalles = () => {
             <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
             <div className="mt-4 d-flex gap-3">
               <button className="btn btn-outline-light px-4">Comprar ahora</button>
-              <button className="btn btn-success px-4">Añadir al carrito</button>
+              <button className="btn btn-success px-4" onClick={handleAñadir}>
+                Añadir al carrito
+              </button>
             </div>
 
             <h5 className="mt-4">Lista de canciones</h5>
@@ -82,8 +87,6 @@ const ProductosDetalles = () => {
                 <li key={index}>- {cancion}</li>
               ))}
             </ul>
-
-
           </div>
         </div>
       </div>
@@ -92,3 +95,4 @@ const ProductosDetalles = () => {
 };
 
 export default ProductosDetalles;
+

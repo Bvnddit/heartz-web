@@ -16,7 +16,10 @@ import Admin from "./pages/Admin";
 import AdminArtistas from "./pages/AdminArtistas";
 import AdminVinilos from "./pages/AdminVinilos";
 import AdminGeneros from "./pages/AdminGeneros";
-
+import Carrito from "./pages/Carrito";
+import Compra from "./pages/Compra.jsx";
+import Compraok from "./pages/Compra-ok.jsx";
+ 
 function AppContent() {
   const location = useLocation();
 
@@ -39,6 +42,10 @@ function AppContent() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
           <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
+          <Route path="/carrito" element={<Carrito />} />
+          <Route path="/compra" element={<Compra />} /> 
+          <Route path="/compra-ok" element={<Compraok />} />
+
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin-artistas" element={<AdminArtistas />} />
           <Route path="/admin-vinilos" element={<AdminVinilos />} />

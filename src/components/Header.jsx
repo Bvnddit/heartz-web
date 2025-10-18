@@ -64,9 +64,15 @@ function Header() {
             <button className="btn btn-outline-light" type="submit">Buscar</button>
           </form>
 
-          <div className="header-buttons">
+
+
+          <div className="header-buttons me-3">
+                        {/* Botón de carrito */}
+            <button className="btn btn-outline-light m-3e-2" onClick={() => navigate("/carrito")}>
+              🛒 Carrito
+            </button>
             <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
-            <Link to="/Registro" className="btn btn-light">Registrarse</Link>
+            <Link to="/Registro" className="btn btn-light me-2">Registrarse</Link>
           </div>
         </div>
       </div>
