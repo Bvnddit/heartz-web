@@ -20,6 +20,7 @@ import Carrito from "./pages/Carrito";
 import Compra from "./pages/Compra.jsx";
 import Compraok from "./pages/Compra-ok.jsx";
 import AdminPerfil from "./pages/AdminPerfil.jsx";
+import AdminReportes from "./pages/AdminReportes.jsx";
  
 function AppContent() {
   const location = useLocation();
@@ -52,6 +53,7 @@ function AppContent() {
           <Route path="/admin-vinilos" element={<AdminVinilos />} />
           <Route path="/admin-generos" element={<AdminGeneros />} />
           <Route path="/admin-perfil" element={<AdminPerfil />} />
+          <Route path="/admin-reportes" element={<AdminReportes />} />
         </Routes>
       </div>
       <Footer />

@@ -48,11 +48,11 @@ function AdminPerfil() {
             <hr className="border-secondary" />
 
             <div className="mt-4">
-              <p><strong>📧 Correo:</strong> {perfil.correo}</p>
-              <p><strong>📱 Teléfono:</strong> {perfil.telefono}</p>
-              <p><strong>📍 Dirección:</strong> {perfil.direccion}</p>
-              <p><strong>🗓️ Fecha de ingreso:</strong> {perfil.fechaIngreso}</p>
-              <p><strong>🔐 Rol:</strong> {perfil.rol}</p>
+              <p><strong>Correo:</strong> {perfil.correo}</p>
+              <p><strong>Teléfono:</strong> {perfil.telefono}</p>
+              <p><strong>Dirección:</strong> {perfil.direccion}</p>
+              <p><strong>Fecha de ingreso:</strong> {perfil.fechaIngreso}</p>
+              <p><strong>Rol:</strong> {perfil.rol}</p>
             </div>
 
             <div className="text-center mt-4">
