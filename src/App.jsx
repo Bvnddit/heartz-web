@@ -13,6 +13,9 @@ import Registro from "./pages/Registro";
 import DetalleBlog1 from "./pages/DetalleBlog1";
 import DetalleBlog2 from "./pages/DetalleBlog2";
 import Admin from "./pages/Admin";
+import AdminArtistas from "./pages/AdminArtistas";
+import AdminVinilos from "./pages/AdminVinilos";
+import AdminGeneros from "./pages/AdminGeneros";
 
 function AppContent() {
   const location = useLocation();
@@ -37,6 +40,9 @@ function AppContent() {
           <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
           <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin-artistas" element={<AdminArtistas />} />
+          <Route path="/admin-vinilos" element={<AdminVinilos />} />
+          <Route path="/admin-generos" element={<AdminGeneros />} />
         </Routes>
       </div>
       <Footer />

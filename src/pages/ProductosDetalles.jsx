@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { vinilos } from "../Data/vinilos";
-import { artistas } from "../Data/artistas";
-import { generos } from "../Data/generos";
+import { vinilos } from "../data/vinilos";
+import { artistas } from "../data/artistas";
+import { generos } from "../data/generos";
 import "../assets/css/main.css";
 
 const ProductosDetalles = () => {

@@ -1,6 +1,6 @@
 import { buscarViniloPorTitulo, buscarArtistaPorNombre } from "../util/Validaciones.js";
 import { vinilos } from "../Data/vinilos";
-import { artistas } from "../Data/artistas";
+import { artistas } from "../data/artistas";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 

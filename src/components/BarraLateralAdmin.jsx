@@ -15,16 +15,22 @@ function BarraLateralAdmin() {
           <Link to="/admin" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Panel</Link>
         </li>
         <li className="nav-item">
-          <Link to="/admin/usuarios" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Usuarios</Link>
+          <Link to="/admin-usuarios" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Usuarios</Link>
         </li>
         <li className="nav-item">
-          <Link to="/admin/productos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Productos</Link>
+          <Link to="/admin-vinilos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Vinilos</Link>
         </li>
         <li className="nav-item">
-          <Link to="/admin/pedidos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Pedidos</Link>
+          <Link to="/admin-artistas" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Artistas</Link>
         </li>
         <li className="nav-item">
-          <Link to="/admin/reportes" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Reportes</Link>
+          <Link to="/admin-generos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Generos</Link>
+        </li>
+        <li className="nav-item">
+          <Link to="/admin-reportes" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Reportes</Link>
+        </li>
+        <li className="nav-item">
+          <Link to="/admin-perfil" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Perfil</Link>
         </li>
       </ul>
     </div>

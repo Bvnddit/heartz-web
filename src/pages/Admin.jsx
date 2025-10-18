@@ -56,14 +56,14 @@ function Admin() {
                 <tr style={{ borderBottom: '1px solid #333' }}>
                   <td>001</td>
                   <td>Juan Pérez</td>
-                  <td>Saturday Night Wrist - Deftones (Vinilo)</td>
+                  <td>Saturday Night Wrist - Deftones</td>
                   <td>12-09-2025</td>
                   <td><span className="badge bg-success">Completado</span></td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #333' }}>
                   <td>002</td>
                   <td>Cristian Grey</td>
-                  <td>Imaginal Disk - Magdanela Bay (Vinilo)</td>
+                  <td>Imaginal Disk - Magdanela Bay</td>
                   <td>12-09-2025</td>
                   <td><span className="badge bg-warning">Pendiente</span></td>
                 </tr>
