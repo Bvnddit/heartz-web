@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/Header";
+import HeaderAdmin from "../components/HeaderAdmin";
 import Footer from "../components/Footer";
 import BarraLateralAdmin from "../components/BarraLateralAdmin";
 
@@ -45,13 +45,13 @@ function AdminReportes() {
 
   return (
     <>
-      <Header />
+      <HeaderAdmin />
 
       <div className="d-flex">
         <BarraLateralAdmin />
 
         {/* Contenido principal */}
-        <div className="flex-grow-1 p-4 text-light" style={{ backgroundColor: "#121212", minHeight: "100vh" }}>
+        <div className="flex-grow-1 p-4 text-light" style={{ background: 'linear-gradient(135deg, #1c1c1c, #2a1c3b)', minHeight: "100vh" }}>
           <div
             className="p-4 rounded-4 shadow-lg"
             style={{
