@@ -1,12 +1,34 @@
-import { Link } from "react-router-dom";
+import { buscarViniloPorTitulo, buscarArtistaPorNombre } from "../util/Validaciones.js";
+import { vinilos } from "../Data/vinilos";
+import { artistas } from "../Data/artistas";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function Header() {
+  const [busqueda, setBusqueda] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    const viniloEncontrado = buscarViniloPorTitulo(vinilos, busqueda);
+    const artistaEncontrado = buscarArtistaPorNombre(artistas, busqueda);
+
+    if (viniloEncontrado) {
+      navigate(`/productos/${viniloEncontrado.id_vin}`);
+    } else if (artistaEncontrado) {
+      navigate(`/productos?artista=${artistaEncontrado.id_art}`);
+    } else {
+      alert("No se encontró ningún vinilo o artista con ese nombre.");
+    }
+
+    setBusqueda("");
+  };
+
   return (
     <header id="header" className="header d-flex align-items-center sticky-top">
       <div className="container-fluid position-relative d-flex align-items-center justify-content-between">
         <Link to="/" className="logo d-flex align-items-center me-auto me-xl-0">
-          {/* Si quieres usar un logo en imagen */}
-          {/* <img src="assets/img/logo.png" alt="Heartz" /> */}
           <i className="bi bi-camera" />
           <h1 className="sitename">Heartz</h1>
         </Link>
@@ -30,18 +52,18 @@ function Header() {
             <a href="#" className="linkedin"><i className="bi bi-linkedin" /></a>
           </div>
 
-          {/* Buscador */}
-          <form className="d-flex me-3" role="search">
+          <form className="d-flex me-3" role="search" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
               type="search"
-              placeholder="Buscar productos..."
+              placeholder="Buscar vinilo o artista..."
               aria-label="Buscar"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
             />
             <button className="btn btn-outline-light" type="submit">Buscar</button>
           </form>
 
-          {/* Botones de Inicio de Sesión y Registrarse */}
           <div className="header-buttons">
             <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
             <Link to="/Registro" className="btn btn-light">Registrarse</Link>

@@ -54,3 +54,21 @@ export const ordenarPorPrecio = (vinilos, ordenPrecio) => {
   return vinilos;
 };
 
+export function filtrarPorArtista(vinilos, id_artista) {
+  if (id_artista === "todos") return vinilos;
+  return vinilos.filter((v) => v.id_art === parseInt(id_artista));
+}
+
+
+// Funcion para buscador de header
+export const buscarViniloPorTitulo = (vinilos, texto) => {
+  const t = texto.trim().toLowerCase();
+  if (!t) return null;
+  return vinilos.find((v) => v.titulo.toLowerCase().includes(t)) || null;
+};
+
+export const buscarArtistaPorNombre = (artistas, texto) => {
+  const t = texto.trim().toLowerCase();
+  if (!t) return null;
+  return artistas.find((a) => a.nombre.toLowerCase().includes(t)) || null;
+}

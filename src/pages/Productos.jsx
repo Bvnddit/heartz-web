@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { vinilos } from "../Data/vinilos";
 import { artistas } from "../Data/artistas";
 import { generos } from "../Data/generos";
@@ -7,12 +7,20 @@ import {
   getArtista,
   getGenero,
   filtrarPorGenero,
+  filtrarPorArtista,
   ordenarPorPrecio,
 } from "../util/Validaciones.js";
 
 const Productos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+ 
+  const params = new URLSearchParams(location.search);
+  const artistaParam = params.get("artista");
+
   const [filtroGenero, setFiltroGenero] = useState("todos");
+  const [filtroArtista, setFiltroArtista] = useState(artistaParam || "todos");
   const [ordenPrecio, setOrdenPrecio] = useState("ninguno");
 
   const handleVer = (vinilo) => {
@@ -25,9 +33,10 @@ const Productos = () => {
     alert(`Añadido al carrito: ${vinilo.titulo}`);
   };
 
+  // 🔹 Filtrado y ordenamiento
   let vinilosFiltrados = filtrarPorGenero(vinilos, filtroGenero);
+  vinilosFiltrados = filtrarPorArtista(vinilosFiltrados, filtroArtista);
   vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
-
 
   return (
     <div className="container my-5">
@@ -35,6 +44,7 @@ const Productos = () => {
 
       {/* 🔹 Barra de filtros superior */}
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 rounded bg-dark text-white shadow-sm">
+        {/* Filtro por género */}
         <div className="d-flex gap-2 align-items-center">
           <span className="fw-semibold">Género:</span>
           <select
@@ -52,6 +62,25 @@ const Productos = () => {
           </select>
         </div>
 
+        {/* Filtro por artista */}
+        <div className="d-flex gap-2 align-items-center">
+          <span className="fw-semibold">Artista:</span>
+          <select
+            className="form-select form-select-sm bg-secondary text-white border-0"
+            style={{ width: "160px" }}
+            value={filtroArtista}
+            onChange={(e) => setFiltroArtista(e.target.value)}
+          >
+            <option value="todos">Todos</option>
+            {artistas.map((a) => (
+              <option key={a.id_art} value={a.id_art}>
+                {a.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Orden por precio */}
         <div className="d-flex gap-2 align-items-center">
           <span className="fw-semibold">Ordenar:</span>
           <select
@@ -67,7 +96,7 @@ const Productos = () => {
         </div>
       </div>
 
-
+      {/* 🔹 Tarjetas de vinilos */}
       <div className="row">
         {vinilosFiltrados.map((vinilo) => (
           <div
@@ -106,7 +135,6 @@ const Productos = () => {
                 <p className="fw-bold text-success">
                   ${vinilo.precio.toLocaleString("es-CL")}
                 </p>
-
               </div>
               <div className="card-footer bg-transparent border-0 d-flex justify-content-center gap-2">
                 <button
