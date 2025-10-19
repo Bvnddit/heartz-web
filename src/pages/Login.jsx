@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { validarEmail, validarPassword } from "../util/Validaciones.js";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +21,14 @@ function Login() {
 
     if (emailErr || passwordErr) return;
 
+    // Verificación de credenciales admin
+    if (email === "admin@heartz.cl" && password === "admin") {
+      navigate("/admin");
+      return;
+    }
+
+    // Aquí iría la lógica para otros usuarios (cliente/empleado)
+    alert("Credenciales incorrectas"); 
   };
 
   return (
