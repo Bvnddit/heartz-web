@@ -79,7 +79,7 @@ const Compraok = () => {
                   <div className="text-center mb-3">
                     <div className="card bg-white">
                       <div className="card-body">
-                        <h4>Total pagado: <strong>$1000</strong></h4>
+                        <h4>Total pagado: <strong>$99.900</strong></h4>
                       </div>
                     </div>
                   </div>
