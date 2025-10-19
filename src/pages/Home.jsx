@@ -74,7 +74,7 @@ const Home = () => {
                       <div className="btn-group">
                         <button
                           className="btn btn-sm btn-outline-secondary"
-                          onClick={() => navigate("/productos/6")}
+                          onClick={() => navigate("/productos/4")}
                         >
                           Ver
                         </button>
@@ -89,7 +89,7 @@ const Home = () => {
               <div className="col-md-4">
                 <div className="card mb-4 box-shadow">
                   <div
-                    onClick={() => navigate("/productos/3")}
+                    onClick={() => navigate("/productos/6")}
                     style={{ cursor: "pointer" }}
                   >
                     <img
