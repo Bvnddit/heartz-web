@@ -8,7 +8,7 @@ const Compraok = () => {
   };
 
   return (
-    <div className="container my-5">
+    <div className="container my-5 compraok-container">
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card">
@@ -27,15 +27,15 @@ const Compraok = () => {
                     <p className="card-text">Datos del cliente:</p>
                     <div className="col-6 mb-3 col-md-4">
                       <label className="form-label">Nombre</label>
-                      <input type="text" className="form-control" value="Pedro" disabled />
+                      <input type="text" className="form-control" value="Jose" disabled />
                     </div>
                     <div className="col-6 mb-3 col-md-4">
                       <label className="form-label">Apellidos</label>
-                      <input type="text" className="form-control" value="Hacker" disabled />
+                      <input type="text" className="form-control" value="Carrera" disabled />
                     </div>
                     <div className="mb-3 col-6 col-md-4">
                       <label className="form-label">Correo</label>
-                      <input type="email" className="form-control" value="pedro.hacer20@example.com" disabled />
+                      <input type="email" className="form-control" value="Josegame@gmail.com" disabled />
                     </div>
 
                     <h5 className="card-title mt-3">Dirección de entrega</h5>
@@ -57,7 +57,7 @@ const Compraok = () => {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Indicaciones (opcional)</label>
-                      <textarea className="form-control" rows={3} disabled defaultValue="El martes no estaremos en el depto, pero puede dejárselo con el conserje." />
+                      <textarea className="form-control" rows={3} disabled defaultValue="El día viernes no estaremos en el departamento, porfavor, dejar en conserjeria." />
                     </div>
                   </div>
 
@@ -72,7 +72,7 @@ const Compraok = () => {
                           <th>Subtotal</th>
                         </tr>
                       </thead>
-                      <tbody>{/* Aquí podrías listar productos del carrito si quieres */}</tbody>
+                      <tbody></tbody>
                     </table>
                   </div>
 

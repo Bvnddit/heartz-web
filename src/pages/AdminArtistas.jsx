@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import HeaderAdmin from "../components/HeaderAdmin";
 import BarraLateralAdmin from "../components/BarraLateralAdmin";
-import { artistas as artistasData } from "../data/artistas"; // tus artistas "base"
+import { artistas as artistasData } from "../data/artistas"; 
 
 function AdminArtistas() {
   const [artistas, setArtistas] = useState(() => {

@@ -68,7 +68,7 @@ function Header() {
 
           <div className="header-buttons me-3">
                         {/* Botón de carrito */}
-            <button className="btn btn-outline-light m-3e-2" onClick={() => navigate("/carrito")}>
+            <button className="btn btn-outline-light m-3e-2 me-2" onClick={() => navigate("/carrito")}>
               🛒 Carrito
             </button>
             <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>

@@ -32,17 +32,6 @@ function Contacto() {
         </div>
         <button className="btn btn-outline-primary w-100">Enviar</button>
       </form>
-      <div className="text-center mt-4">
-        <a href="https://www.instagram.com" target="_blank" className="btn btn-outline-primary btn-lg mx-2">
-          <i className="bi bi-instagram fs-3" />
-        </a>
-        <a href="https://www.tiktok.com" target="_blank" className="btn btn-outline-dark btn-lg mx-2">
-          <i className="bi bi-tiktok fs-3" />
-        </a>
-        <a href="https://wa.me/123456789" target="_blank" className="btn btn-outline-success btn-lg mx-2">
-          <i className="bi bi-whatsapp fs-3" />
-        </a>
-      </div>
     </div>
   </div>
 

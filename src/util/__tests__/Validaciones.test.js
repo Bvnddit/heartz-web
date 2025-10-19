@@ -16,6 +16,8 @@ import {
 
 import { artistas, vinilos, generos } from "../../data/artistas.js"; // ajusta la ruta según tu proyecto
 
+
+
 describe("Funciones de Validaciones", () => {
   // Email
   it("validarEmail devuelve error para email inválido", () => {

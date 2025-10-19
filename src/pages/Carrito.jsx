@@ -58,7 +58,7 @@ const Carrito = () => {
 
       <div className="d-flex justify-content-between align-items-center p-3" style={{ borderTop: "1px solid #444" }}>
         <h3>
-          Total: <span className="text-success">${total.toLocaleString("es-CL")}</span>
+          Total (IVA incluido): <span className="text-success">${total.toLocaleString("es-CL")}</span>
         </h3>
         <button className="btn btn-primary btn-lg" onClick={() => navigate("/compra")}>
           Finalizar Compra

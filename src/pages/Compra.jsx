@@ -7,7 +7,7 @@ const Compra = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="compra-fondo"> {/* Clase nueva para aplicar estilos */}
+    <div className="container my-5 compraok-container"> 
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card">
@@ -15,8 +15,8 @@ const Compra = () => {
               <section id="productos-comprados" className="py-3">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <div>
-                    <h4 className="card-title text-light" >Carrito de compra</h4>
-                    <p className="card-text text-light">Completa la siguiente información</p>
+                    <h4 className="card-title text" >Carrito de compra</h4>
+                    <p className="card-text text">Completa la siguiente información</p>
                   </div>
                   <div className="btn btn-primary py-2 px-3" style={{ fontWeight: "bold" }}>
                     Total a pagar: ${total.toLocaleString("es-CL")}
