@@ -38,7 +38,7 @@ describe("Funciones de Validaciones", () => {
     expect(validarNombre("123")).toBe("Por favor, ingresa tu nombre (solo letras y espacios).");
   });
   it("validarNombre no devuelve error para nombre válido", () => {
-    expect(validarNombre("Alan Fuentes")).toBe("");
+    expect(validarNombre("Cristian Ghost")).toBe("");
   });
 
   // RUT
