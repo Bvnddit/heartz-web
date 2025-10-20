@@ -1472,7 +1472,7 @@ section.text-center .btn-outline-light:hover {
 .titulo-marquee {
   display: inline-block;
   white-space: nowrap; 
-  animation: moverIzquierda 10s linear infinite; /
+  animation: moverIzquierda 10s linear infinite; 
 }
 
 @keyframes moverIzquierda {
