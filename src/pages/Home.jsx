@@ -4,6 +4,7 @@ import vinilo1 from "../assets/img/albums/deftones/saturday-night-wrist-cover.jp
 import vinilo2 from "../assets/img/albums/magdalena-bay/imaginal-disk-cover.jpg";
 import vinilo3 from "../assets/img/albums/casiopea/casiopea-cover.jpg";
 import { useNavigate } from "react-router-dom";
+import ProximosProductos from "../components/ProximosProductos";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -181,7 +182,7 @@ const Home = () => {
     </button>
   </div>
 </section>
-
+  <ProximosProductos />
 <section className="py-5 text-center" style={{ background: '#1c1c1c', color: '#fff' }}>
   <div className="container">
     <h2 className="mb-3">Nuestra pasión por el vinilo</h2>

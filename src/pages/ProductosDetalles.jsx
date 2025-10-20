@@ -4,10 +4,10 @@ import { vinilos } from "../data/vinilos";
 import { artistas } from "../data/artistas";
 import { generos } from "../data/generos";
 import "../assets/css/main.css";
-import { CarritoContext } from "../context/CarritoContext.jsx"; // <-- contexto
+import { CarritoContext } from "../context/CarritoContext.jsx"; 
 
 const ProductosDetalles = () => {
-  const { agregarProducto } = useContext(CarritoContext); // <-- usar contexto
+  const { agregarProducto } = useContext(CarritoContext); 
   const { id_vin } = useParams();
   const navigate = useNavigate();
 

@@ -61,5 +61,4 @@ describe("Funciones de Validaciones", () => {
     expect(getGenero(999)).toBe("Sin género");
   });
 
-
 });
