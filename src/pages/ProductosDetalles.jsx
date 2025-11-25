@@ -39,59 +39,161 @@ const ProductosDetalles = () => {
   };
 
   return (
-    <div className="producto-detalle blanco-degradado-background py-5 px-4">
+    <div className="producto-detalle blanco-degradado-background min-vh-100 py-5">
       <div className="container-lg">
-        <button className="btn btn-outline-light mb-4" onClick={() => navigate(-1)}>
-          ← Volver
+        <button
+          className="btn btn-outline-light mb-4 px-4 py-2 rounded-pill shadow-sm"
+          onClick={() => navigate(-1)}
+        >
+          <i className="bi bi-arrow-left me-2"></i>Volver
         </button>
 
-        <div className="row g-4">
-          <div className="col-md-5 text-center d-flex">
-            <div className="flex-grow-1">
-              <img
-                src={vinilo.img[imgIndex]}
-                alt={`${vinilo.titulo} ${imgIndex + 1}`}
-                className="img-fluid rounded-4 shadow mb-3"
-              />
-            </div>
-
-            <div className="d-flex flex-column ms-3">
-              {vinilo.img.map((imagen, index) => (
+        <div className="row g-5">
+          {/* Galería de imágenes */}
+          <div className="col-lg-6">
+            <div className="position-relative">
+              <div className="card bg-dark bg-opacity-25 border-0 shadow-lg rounded-4 overflow-hidden">
                 <img
-                  key={index}
-                  src={imagen}
-                  alt={`mini ${index + 1}`}
-                  className={`rounded shadow-sm mb-2 ${imgIndex === index ? "border border-light" : ""}`}
-                  style={{ width: "60px", cursor: "pointer" }}
-                  onClick={() => setImgIndex(index)}
+                  src={vinilo.img[imgIndex]}
+                  alt={`${vinilo.titulo} ${imgIndex + 1}`}
+                  className="card-img-top"
+                  style={{ height: "500px", objectFit: "cover" }}
                 />
-              ))}
+                <div className="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient bg-dark bg-opacity-50">
+                  <div className="d-flex justify-content-center gap-2">
+                    {vinilo.img.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`btn btn-sm rounded-circle ${imgIndex === index ? "btn-light" : "btn-outline-light"
+                          }`}
+                        style={{ width: "12px", height: "12px", padding: 0 }}
+                        onClick={() => setImgIndex(index)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Miniaturas */}
+              <div className="d-flex gap-2 mt-3 justify-content-center">
+                {vinilo.img.map((imagen, index) => (
+                  <img
+                    key={index}
+                    src={imagen}
+                    alt={`mini ${index + 1}`}
+                    className={`rounded-3 shadow-sm ${imgIndex === index ? "border border-3 border-light" : "opacity-50"
+                      }`}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
+                    onClick={() => setImgIndex(index)}
+                    onMouseEnter={(e) => e.target.style.opacity = "1"}
+                    onMouseLeave={(e) => {
+                      if (imgIndex !== index) e.target.style.opacity = "0.5";
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="col-md-7 text-light">
-            <h2 className="fw-bold mb-3">{vinilo.titulo}</h2>
-            <p><strong>Artista:</strong> {getArtista(vinilo.id_art)}</p>
-            <p><strong>Género:</strong> {getGenero(vinilo.id_gen)}</p>
-            <p><strong>Formato:</strong> {vinilo.formato} — {vinilo.colorVinilo}</p>
-            <p><strong>Edición:</strong> {vinilo.edicion}</p>
-            <p><strong>Sello:</strong> {vinilo.sello}</p>
-            <p><strong>País:</strong> {vinilo.pais}</p>
-            {vinilo.duracion && <p><strong>Duración total:</strong> {vinilo.duracion} minutos</p>}
-            <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
-            <div className="mt-4 d-flex gap-3">
-              <button className="btn btn-outline-light px-4" onClick={handleComprarAhora}>Comprar ahora</button>
-              <button className="btn btn-success px-4" onClick={handleAñadir}>
-                Añadir al carrito
-              </button>
-            </div>
+          {/* Información del producto */}
+          <div className="col-lg-6">
+            <div className="text-light">
+              <h1 className="display-5 fw-bold mb-3">{vinilo.titulo}</h1>
 
-            <h5 className="mt-4">Lista de canciones</h5>
-            <ul className="list-unstyled">
-              {vinilo.listaDeCanciones.map((cancion, index) => (
-                <li key={index}>- {cancion}</li>
-              ))}
-            </ul>
+              <div className="d-flex gap-2 mb-4 flex-wrap">
+                <span className="badge bg-primary bg-opacity-75 px-3 py-2 rounded-pill">
+                  <i className="bi bi-person-fill me-1"></i>
+                  {getArtista(vinilo.id_art)}
+                </span>
+                <span className="badge bg-info bg-opacity-75 px-3 py-2 rounded-pill">
+                  <i className="bi bi-music-note-beamed me-1"></i>
+                  {getGenero(vinilo.id_gen)}
+                </span>
+              </div>
+
+              <div className="card bg-dark bg-opacity-50 border-0 shadow-lg rounded-4 p-4 mb-4">
+                <div className="row g-3">
+                  <div className="col-6">
+                    <p className="mb-2 text-white-50 small">Formato</p>
+                    <p className="mb-0 fw-semibold">{vinilo.formato}</p>
+                  </div>
+                  <div className="col-6">
+                    <p className="mb-2 text-white-50 small">Color</p>
+                    <p className="mb-0 fw-semibold">{vinilo.colorVinilo}</p>
+                  </div>
+                  <div className="col-6">
+                    <p className="mb-2 text-white-50 small">Edición</p>
+                    <p className="mb-0 fw-semibold">{vinilo.edicion}</p>
+                  </div>
+                  <div className="col-6">
+                    <p className="mb-2 text-white-50 small">Sello</p>
+                    <p className="mb-0 fw-semibold">{vinilo.sello}</p>
+                  </div>
+                  <div className="col-6">
+                    <p className="mb-2 text-white-50 small">País</p>
+                    <p className="mb-0 fw-semibold">{vinilo.pais}</p>
+                  </div>
+                  {vinilo.duracion && (
+                    <div className="col-6">
+                      <p className="mb-2 text-white-50 small">Duración</p>
+                      <p className="mb-0 fw-semibold">{vinilo.duracion} min</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="d-flex align-items-center justify-content-between mb-4 p-4 bg-success bg-opacity-25 rounded-4 border border-success border-opacity-50">
+                <div>
+                  <p className="mb-0 text-white-50 small">Precio</p>
+                  <h2 className="mb-0 fw-bold text-success">${vinilo.precio.toLocaleString("es-CL")}</h2>
+                </div>
+                <i className="bi bi-vinyl-fill text-success" style={{ fontSize: "3rem", opacity: 0.3 }}></i>
+              </div>
+
+              <div className="d-grid gap-3 mb-4">
+                <button
+                  className="btn btn-light btn-lg rounded-pill shadow-lg py-3 fw-semibold"
+                  onClick={handleComprarAhora}
+                >
+                  <i className="bi bi-cart-check-fill me-2"></i>
+                  Comprar ahora
+                </button>
+                <button
+                  className="btn btn-outline-light btn-lg rounded-pill py-3 fw-semibold"
+                  onClick={handleAñadir}
+                >
+                  <i className="bi bi-bag-plus-fill me-2"></i>
+                  Añadir al carrito
+                </button>
+              </div>
+
+              {/* Lista de canciones */}
+              <div className="card bg-dark bg-opacity-50 border-0 shadow-lg rounded-4 p-4">
+                <h5 className="mb-3 fw-bold">
+                  <i className="bi bi-music-note-list me-2"></i>
+                  Lista de canciones
+                </h5>
+                <div className="overflow-auto" style={{ maxHeight: "300px" }}>
+                  <ol className="list-group list-group-flush">
+                    {vinilo.listaDeCanciones.map((cancion, index) => (
+                      <li
+                        key={index}
+                        className="list-group-item bg-transparent text-light border-secondary py-2"
+                      >
+                        <span className="text-white-50 me-2">{String(index + 1).padStart(2, '0')}.</span>
+                        {cancion}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
