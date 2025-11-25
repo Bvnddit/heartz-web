@@ -4,10 +4,10 @@ import { vinilos } from "../data/vinilos";
 import { artistas } from "../data/artistas";
 import { generos } from "../data/generos";
 import "../assets/css/main.css";
-import { CarritoContext } from "../context/CarritoContext.jsx"; 
+import { CarritoContext } from "../context/CarritoContext.jsx";
 
 const ProductosDetalles = () => {
-  const { agregarProducto } = useContext(CarritoContext); 
+  const { agregarProducto } = useContext(CarritoContext);
   const { id_vin } = useParams();
   const navigate = useNavigate();
 
@@ -31,6 +31,11 @@ const ProductosDetalles = () => {
   const handleAñadir = () => {
     agregarProducto(vinilo); // <-- agregamos al carrito
     alert(`Añadido al carrito: ${vinilo.titulo}`);
+  };
+
+  const handleComprarAhora = () => {
+    agregarProducto(vinilo); // Añadir al carrito
+    navigate("/compra"); // Redirigir a la página de compra
   };
 
   return (
@@ -75,7 +80,7 @@ const ProductosDetalles = () => {
             {vinilo.duracion && <p><strong>Duración total:</strong> {vinilo.duracion} minutos</p>}
             <p><strong>Precio:</strong> ${vinilo.precio.toLocaleString("es-CL")}</p>
             <div className="mt-4 d-flex gap-3">
-              <button className="btn btn-outline-light px-4">Comprar ahora</button>
+              <button className="btn btn-outline-light px-4" onClick={handleComprarAhora}>Comprar ahora</button>
               <button className="btn btn-success px-4" onClick={handleAñadir}>
                 Añadir al carrito
               </button>

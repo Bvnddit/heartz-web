@@ -1,7 +1,10 @@
- 
+
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 const Compraok = () => {
+  const location = useLocation();
+  const formData = location.state || {}; // Fallback si no hay datos
 
   const handleMensaje = (mensaje) => {
     alert(mensaje);
@@ -20,44 +23,43 @@ const Compraok = () => {
                   </div>
                   <h3 className="card-title">
                     <i className="bi bi-check-circle text-success" />{" "}
-                    Se ha realizado la compra. nro #20240705
+                    Se ha realizado la compra. nro #1
                   </h3>
-
                   <div className="row">
                     <p className="card-text">Datos del cliente:</p>
                     <div className="col-6 mb-3 col-md-4">
                       <label className="form-label">Nombre</label>
-                      <input type="text" className="form-control" value="Jose" disabled />
+                      <input type="text" className="form-control" value={formData.nombre || ""} disabled />
                     </div>
                     <div className="col-6 mb-3 col-md-4">
                       <label className="form-label">Apellidos</label>
-                      <input type="text" className="form-control" value="Carrera" disabled />
+                      <input type="text" className="form-control" value={formData.apellidos || ""} disabled />
                     </div>
                     <div className="mb-3 col-6 col-md-4">
                       <label className="form-label">Correo</label>
-                      <input type="email" className="form-control" value="Josegame@gmail.com" disabled />
+                      <input type="email" className="form-control" value={formData.correo || ""} disabled />
                     </div>
 
                     <h5 className="card-title mt-3">Dirección de entrega</h5>
                     <div className="mb-3 col-12 col-md-6">
                       <label className="form-label">Calle</label>
-                      <input type="text" className="form-control" value="Los crisantemos, Edificio Norte" disabled />
+                      <input type="text" className="form-control" value={formData.calle || ""} disabled />
                     </div>
                     <div className="mb-3 col-12 col-md-6">
                       <label className="form-label">Departamento (opcional)</label>
-                      <input type="text" className="form-control" value="Depto 603" disabled />
+                      <input type="text" className="form-control" value={formData.departamento || ""} disabled />
                     </div>
                     <div className="mb-3 col-6 col-md-6">
                       <label className="form-label">Región</label>
-                      <select className="form-select" disabled></select>
+                      <input type="text" className="form-control" value={formData.region || ""} disabled />
                     </div>
                     <div className="mb-3 col-6 col-md-6">
                       <label className="form-label">Comuna</label>
-                      <select className="form-select" disabled></select>
+                      <input type="text" className="form-control" value={formData.comuna || ""} disabled />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Indicaciones (opcional)</label>
-                      <textarea className="form-control" rows={3} disabled defaultValue="El día viernes no estaremos en el departamento, porfavor, dejar en conserjeria." />
+                      <textarea className="form-control" rows={3} disabled value={formData.indicaciones || ""} />
                     </div>
                   </div>
 
@@ -79,7 +81,7 @@ const Compraok = () => {
                   <div className="text-center mb-3">
                     <div className="card bg-white">
                       <div className="card-body">
-                        <h4>Total pagado: <strong>$99.900</strong></h4>
+                        <h4>Total pagado: <strong>${(formData.total || 0).toLocaleString("es-CL")}</strong></h4>
                       </div>
                     </div>
                   </div>

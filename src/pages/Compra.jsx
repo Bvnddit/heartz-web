@@ -1,13 +1,16 @@
 import { useContext } from "react";
 import { CarritoContext } from "../context/CarritoContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { useFormularioCompra } from "../util/Validaciones.js";
 
 const Compra = () => {
   const { carrito, total } = useContext(CarritoContext);
   const navigate = useNavigate();
 
+  const { formData, errores, handleChange, handleCompra } = useFormularioCompra(navigate, total);
+
   return (
-    <div className="container my-5 compraok-container"> 
+    <div className="container my-5 compraok-container">
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card">
@@ -59,39 +62,113 @@ const Compra = () => {
                 <h4 className="card-title">Información del cliente</h4>
                 <div className="col-6 mb-3">
                   <label htmlFor="nombre" className="form-label">Nombre<small className="text-danger">*</small></label>
-                  <input type="text" className="form-control" id="nombre" name="nombre" required />
+                  <input
+                    type="text"
+                    className={`form-control ${errores.nombre ? "is-invalid" : ""}`}
+                    id="nombre"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errores.nombre && <div className="invalid-feedback">{errores.nombre}</div>}
                 </div>
                 <div className="col-6 mb-3">
                   <label htmlFor="apellidos" className="form-label">Apellidos<small className="text-danger">*</small></label>
-                  <input type="text" className="form-control" id="apellidos" name="apellidos" required />
+                  <input
+                    type="text"
+                    className={`form-control ${errores.apellidos ? "is-invalid" : ""}`}
+                    id="apellidos"
+                    name="apellidos"
+                    value={formData.apellidos}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errores.apellidos && <div className="invalid-feedback">{errores.apellidos}</div>}
                 </div>
                 <div className="mb-3 col-6">
                   <label htmlFor="correo" className="form-label">Correo<small className="text-danger">*</small></label>
-                  <input type="email" className="form-control" id="correo" name="correo" required />
+                  <input
+                    type="email"
+                    className={`form-control ${errores.correo ? "is-invalid" : ""}`}
+                    id="correo"
+                    name="correo"
+                    value={formData.correo}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errores.correo && <div className="invalid-feedback">{errores.correo}</div>}
                 </div>
 
                 <h4 className="card-title mt-3">Dirección de entrega</h4>
                 <div className="mb-3 col-12 col-md-6">
                   <label htmlFor="calle" className="form-label">Calle<small className="text-danger">*</small></label>
-                  <input type="text" className="form-control" id="calle" name="calle" required />
+                  <input
+                    type="text"
+                    className={`form-control ${errores.calle ? "is-invalid" : ""}`}
+                    id="calle"
+                    name="calle"
+                    value={formData.calle}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errores.calle && <div className="invalid-feedback">{errores.calle}</div>}
                 </div>
                 <div className="mb-3 col-12 col-md-6">
                   <label htmlFor="departamento" className="form-label">Departamento (opcional)</label>
-                  <input type="text" className="form-control" id="departamento" name="departamento" placeholder="Ej: 603" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="departamento"
+                    name="departamento"
+                    value={formData.departamento}
+                    onChange={handleChange}
+                    placeholder="Ej: 603"
+                  />
                 </div>
                 <div className="mb-3 col-6">
                   <label htmlFor="region" className="form-label">Región<small className="text-danger">*</small></label>
-                  <select className="form-select" id="region" required></select>
+                  <select
+                    className={`form-select ${errores.region ? "is-invalid" : ""}`}
+                    id="region"
+                    name="region"
+                    value={formData.region}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione...</option>
+                    <option value="Metropolitana">Metropolitana</option>
+                    <option value="Valparaíso">Valparaíso</option>
+                    <option value="Biobío">Biobío</option>
+                  </select>
+                  {errores.region && <div className="invalid-feedback">{errores.region}</div>}
                 </div>
                 <div className="mb-3 col-6">
                   <label htmlFor="comuna" className="form-label">Comuna<small className="text-danger">*</small></label>
-                  <select className="form-select" id="comuna" required></select>
+                  <select
+                    className={`form-select ${errores.comuna ? "is-invalid" : ""}`}
+                    id="comuna"
+                    name="comuna"
+                    value={formData.comuna}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione...</option>
+                    <option value="Santiago">Santiago</option>
+                    <option value="Providencia">Providencia</option>
+                    <option value="Viña del Mar">Viña del Mar</option>
+                    <option value="Concepción">Concepción</option>
+                  </select>
+                  {errores.comuna && <div className="invalid-feedback">{errores.comuna}</div>}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="indicaciones" className="form-label">Indicaciones (opcional)</label>
                   <textarea
                     className="form-control"
                     id="indicaciones"
+                    name="indicaciones"
+                    value={formData.indicaciones}
+                    onChange={handleChange}
                     rows={3}
                     placeholder="Ej.: Entre calles, color del edificio, no tiene timbre."
                   />
@@ -100,7 +177,7 @@ const Compra = () => {
                 <div className="text-end">
                   <button
                     className="btn btn-success btn-lg"
-                    onClick={() => navigate("/compra-ok")}
+                    onClick={handleCompra}
                   >
                     Pagar ahora <strong>${total.toLocaleString("es-CL")}</strong>
                   </button>

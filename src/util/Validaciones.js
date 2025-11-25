@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export const validarEmail = (email) => {
   const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
   if (!emailRegex.test(email)) return "Por favor, ingresa un correo electrónico válido.";
@@ -14,6 +16,8 @@ export const validarNombre = (nombre) => {
   if (!nombreRegex.test(nombre)) return "Por favor, ingresa tu nombre (solo letras y espacios).";
   return "";
 };
+
+
 
 export const validarRut = (rut) => {
   // Verifica formato básico
@@ -42,7 +46,59 @@ export const validarRut = (rut) => {
   return "";
 };
 
+export const validarFormularioCompra = (formData) => {
+  const errores = {};
 
+  const errorNombre = validarNombre(formData.nombre);
+  if (errorNombre) errores.nombre = errorNombre;
+
+  const errorApellidos = validarNombre(formData.apellidos);
+  if (errorApellidos) errores.apellidos = errorApellidos;
+
+  const errorCorreo = validarEmail(formData.correo);
+  if (errorCorreo) errores.correo = errorCorreo;
+
+  if (!formData.calle.trim()) errores.calle = "La calle es obligatoria.";
+  if (!formData.region) errores.region = "Debes seleccionar una región.";
+  if (!formData.comuna) errores.comuna = "Debes seleccionar una comuna.";
+
+  return errores;
+};
+
+export const useFormularioCompra = (navigate, total) => {
+  const [formData, setFormData] = useState({
+    nombre: "",
+    apellidos: "",
+    correo: "",
+    calle: "",
+    departamento: "",
+    region: "",
+    comuna: "",
+    indicaciones: "",
+  });
+
+  const [errores, setErrores] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Limpiar error al escribir
+    if (errores[name]) {
+      setErrores({ ...errores, [name]: "" });
+    }
+  };
+
+  const handleCompra = () => {
+    const nuevosErrores = validarFormularioCompra(formData);
+    setErrores(nuevosErrores);
+
+    if (Object.keys(nuevosErrores).length === 0) {
+      navigate("/compra-ok", { state: { ...formData, total } });
+    }
+  };
+
+  return { formData, errores, handleChange, handleCompra };
+};
 
 // Funciones para filtrar en productos
 import { artistas } from "../data/artistas";
