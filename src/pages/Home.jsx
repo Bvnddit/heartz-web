@@ -6,8 +6,24 @@ import vinilo3 from "../assets/img/albums/casiopea/casiopea-cover.jpg";
 import { useNavigate } from "react-router-dom";
 import ProximosProductos from "../components/ProximosProductos";
 
+import { useEffect } from "react";
 const Home = () => {
   const navigate = useNavigate();
+
+  // TEST DE BACKEND
+  useEffect(() => {
+    const testBackend = async () => {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + "/usuarios"); // <-- tu endpoint
+        const data = await res.json();
+        console.log("Backend funcionando:", data);
+      } catch (error) {
+        console.error("Error al conectar con el backend:", error);
+      }
+    };
+
+    testBackend();
+  }, []);
 
   return (
     <>
@@ -123,79 +139,79 @@ const Home = () => {
         </div>
       </div>
 
-<section className="bg-dark text-light py-5">
-  <div className="container text-center">
-    <h2 className="fw-bold mb-3">Lo que dicen nuestros clientes</h2>
+      <section className="bg-dark text-light py-5">
+        <div className="container text-center">
+          <h2 className="fw-bold mb-3">Lo que dicen nuestros clientes</h2>
 
 
-    <div className="row g-4">
-      {/* Testimonio 1 */}
-      <div className="col-md-4">
-        <div 
-          className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
-          style={{ transition: "transform 0.3s ease" }}
-          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-        >
-          <p className="fst-italic fs-5">“Excelente calidad y envío rápido.”</p>
-          <footer className="blockquote-footer text-light mt-3">Matías R.</footer>
+          <div className="row g-4">
+            {/* Testimonio 1 */}
+            <div className="col-md-4">
+              <div
+                className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
+                style={{ transition: "transform 0.3s ease" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <p className="fst-italic fs-5">“Excelente calidad y envío rápido.”</p>
+                <footer className="blockquote-footer text-light mt-3">Matías R.</footer>
+              </div>
+            </div>
+
+            {/* Testimonio 2 */}
+            <div className="col-md-4">
+              <div
+                className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
+                style={{ transition: "transform 0.3s ease" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <p className="fst-italic fs-5">“El vinilo de Deftones suena increíble, recomendado.”</p>
+                <footer className="blockquote-footer text-light mt-3">Camila S.</footer>
+              </div>
+            </div>
+
+            {/* Testimonio 3 */}
+            <div className="col-md-4">
+              <div
+                className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
+                style={{ transition: "transform 0.3s ease" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <p className="fst-italic fs-5">“Una tienda con muy buen gusto musical.”</p>
+                <footer className="blockquote-footer text-light mt-3">Diego A.</footer>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Testimonio 2 */}
-      <div className="col-md-4">
-        <div 
-          className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
-          style={{ transition: "transform 0.3s ease" }}
-          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-        >
-          <p className="fst-italic fs-5">“El vinilo de Deftones suena increíble, recomendado.”</p>
-          <footer className="blockquote-footer text-light mt-3">Camila S.</footer>
+      <section className="py-5 text-center" style={{ background: 'linear-gradient(135deg, #1a1a1a, #3b0066)', color: '#fff' }}>
+        <div className="container">
+          <h2 className="mb-3">Encuentra tu próximo vinilo</h2>
+          <p className="text-muted mb-4">
+            Explora nuestra colección y déjate llevar por la música que marcó generaciones.
+          </p>
+          <button className="btn btn-light" onClick={() => navigate('/productos')}>
+            Ver catálogo completo
+          </button>
         </div>
-      </div>
-
-      {/* Testimonio 3 */}
-      <div className="col-md-4">
-        <div 
-          className="p-4 rounded-4 bg-secondary bg-opacity-10 shadow-sm h-100 transition"
-          style={{ transition: "transform 0.3s ease" }}
-          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-        >
-          <p className="fst-italic fs-5">“Una tienda con muy buen gusto musical.”</p>
-          <footer className="blockquote-footer text-light mt-3">Diego A.</footer>
+      </section>
+      <ProximosProductos />
+      <section className="py-5 text-center" style={{ background: '#1c1c1c', color: '#fff' }}>
+        <div className="container">
+          <h2 className="mb-3">Nuestra pasión por el vinilo</h2>
+          <p className="text-muted mb-4" style={{ maxWidth: '700px', margin: '0 auto' }}>
+            Creemos en la magia del sonido analógico, en las portadas que cuentan historias
+            y en la sensación única de poner una aguja sobre un disco.
+            Gracias por ser parte de esta comunidad que mantiene viva la esencia de la música.
+          </p>
+          <button className="btn btn-outline-light" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            Volver arriba ↑
+          </button>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section className="py-5 text-center" style={{ background: 'linear-gradient(135deg, #1a1a1a, #3b0066)', color: '#fff' }}>
-  <div className="container">
-    <h2 className="mb-3">Encuentra tu próximo vinilo</h2>
-    <p className="text-muted mb-4">
-      Explora nuestra colección y déjate llevar por la música que marcó generaciones.
-    </p>
-    <button className="btn btn-light" onClick={() => navigate('/productos')}>
-      Ver catálogo completo
-    </button>
-  </div>
-</section>
-  <ProximosProductos />
-<section className="py-5 text-center" style={{ background: '#1c1c1c', color: '#fff' }}>
-  <div className="container">
-    <h2 className="mb-3">Nuestra pasión por el vinilo</h2>
-    <p className="text-muted mb-4" style={{ maxWidth: '700px', margin: '0 auto' }}>
-      Creemos en la magia del sonido analógico, en las portadas que cuentan historias
-      y en la sensación única de poner una aguja sobre un disco.  
-      Gracias por ser parte de esta comunidad que mantiene viva la esencia de la música.
-    </p>
-    <button className="btn btn-outline-light" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-      Volver arriba ↑
-    </button>
-  </div>
-</section>
+      </section>
 
     </>
   );

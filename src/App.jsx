@@ -22,12 +22,11 @@ import Compraok from "./pages/Compra-ok.jsx";
 import AdminPerfil from "./pages/AdminPerfil.jsx";
 import AdminReportes from "./pages/AdminReportes.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios.jsx";
- 
+
 function AppContent() {
   const location = useLocation();
 
   const hideHeaderRoutes = ['/admin'];
-
   const shouldHideHeader = hideHeaderRoutes.some(path => location.pathname.startsWith(path));
 
   return (
@@ -46,7 +45,7 @@ function AppContent() {
           <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
           <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
           <Route path="/carrito" element={<Carrito />} />
-          <Route path="/compra" element={<Compra />} /> 
+          <Route path="/compra" element={<Compra />} />
           <Route path="/compra-ok" element={<Compraok />} />
 
           <Route path="/admin" element={<Admin />} />
@@ -65,7 +64,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router basename="/heartz-web">
+    <Router>
       <AppContent />
     </Router>
   );
