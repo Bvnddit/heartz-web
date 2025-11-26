@@ -13,9 +13,7 @@ import Registro from "./pages/Registro";
 import DetalleBlog1 from "./pages/DetalleBlog1";
 import DetalleBlog2 from "./pages/DetalleBlog2";
 import Admin from "./pages/Admin";
-import AdminArtistas from "./pages/AdminArtistas";
 import AdminVinilos from "./pages/AdminVinilos";
-import AdminGeneros from "./pages/AdminGeneros";
 import Carrito from "./pages/Carrito";
 import Compra from "./pages/Compra.jsx";
 import Compraok from "./pages/Compra-ok.jsx";
@@ -49,9 +47,7 @@ function AppContent() {
           <Route path="/compra-ok" element={<Compraok />} />
 
           <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-artistas" element={<AdminArtistas />} />
           <Route path="/admin-vinilos" element={<AdminVinilos />} />
-          <Route path="/admin-generos" element={<AdminGeneros />} />
           <Route path="/admin-perfil" element={<AdminPerfil />} />
           <Route path="/admin-reportes" element={<AdminReportes />} />
           <Route path="/admin-usuarios" element={<AdminUsuarios />} />
