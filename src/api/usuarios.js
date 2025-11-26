@@ -1,5 +1,7 @@
 import api from "./api";
 
+// ----------------- USUARIOS -----------------
+
 // GET todos los usuarios
 export const getUsuarios = () => api.get("/usuarios");
 
