@@ -4,12 +4,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 
 import App from './App.jsx'
-import { CarritoProvider } from './context/CarritoContext.jsx'; 
+import { CarritoProvider } from './context/CarritoContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <CarritoProvider>
-      <App />
-    </CarritoProvider>
+    <AuthProvider>
+      <CarritoProvider>
+        <App />
+      </CarritoProvider>
+    </AuthProvider>
   </StrictMode>,
 )

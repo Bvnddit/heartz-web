@@ -35,7 +35,14 @@ const AdminUsuarios = () => {
       const response = await getUsuarios();
       // Asegurarse de que siempre sea un array
       const data = Array.isArray(response.data) ? response.data : [];
-      setUsuarios(data);
+      // Normalizar el campo rol si viene como objeto
+      const usuariosNormalizados = data.map(usuario => ({
+        ...usuario,
+        rol: typeof usuario.rol === 'object' && usuario.rol !== null 
+          ? usuario.rol.nombre || usuario.rol 
+          : usuario.rol
+      }));
+      setUsuarios(usuariosNormalizados);
     } catch (err) {
       console.error("Error al cargar usuarios:", err);
       setError("Error al cargar los usuarios. Por favor, intenta de nuevo.");
@@ -109,7 +116,16 @@ const AdminUsuarios = () => {
   };
 
   const handleEditar = (usuario) => {
-    setForm(usuario);
+    // Normalizar el rol si viene como objeto
+    const rolNormalizado = typeof usuario.rol === 'object' && usuario.rol !== null 
+      ? usuario.rol.nombre || usuario.rol 
+      : usuario.rol;
+    
+    setForm({
+      ...usuario,
+      rol: rolNormalizado,
+      contrasena: "" // No mostrar la contraseña al editar
+    });
     setEditandoRut(usuario.rut);
   };
 
@@ -272,7 +288,9 @@ const AdminUsuarios = () => {
                       <td>{usuario.correo}</td>
                       <td>
                         <span className={`badge ${usuario.rol === 'Empleado' ? 'bg-warning' : 'bg-info'}`}>
-                          {usuario.rol}
+                          {typeof usuario.rol === 'object' && usuario.rol !== null 
+                            ? usuario.rol.nombre || JSON.stringify(usuario.rol)
+                            : usuario.rol}
                         </span>
                       </td>
                       <td>

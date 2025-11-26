@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { validarEmail, validarPassword } from "../util/Validaciones.js";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { loginUsuario } from "../api/usuarios";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState("");
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setGeneralError("");
 
     const emailErr = validarEmail(email);
     const passwordErr = validarPassword(password);
@@ -21,14 +27,48 @@ function Login() {
 
     if (emailErr || passwordErr) return;
 
-    // Verificación de credenciales admin
-    if (email === "admin@heartz.cl" && password === "admin") {
-      navigate("/admin");
-      return;
-    }
+    setLoading(true);
 
-    // Aquí iría la lógica para otros usuarios (cliente/empleado)
-    alert("Credenciales incorrectas"); 
+    try {
+      const loginData = { email, password };
+      const response = await loginUsuario(loginData);
+
+      // Extraer email y rol del response como pidió el usuario
+      const { email: userEmail, rol, token } = response.data;
+
+      console.log("Usuario logueado:", { email: userEmail, rol });
+
+      // Crear objeto de usuario con la información necesaria
+      const userData = {
+        email: userEmail,
+        rol: rol,
+        token: token
+      };
+
+      // Usar el contexto de autenticación
+      const loginResult = await login(userData);
+
+      if (loginResult.success) {
+        // Redirigir basado en el rol
+        if (rol === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setGeneralError("Error al iniciar sesión. Inténtalo de nuevo.");
+      }
+
+    } catch (error) {
+      console.error("Error en login:", error);
+      if (error.response?.status === 401) {
+        setGeneralError("Credenciales incorrectas. Verifica tu email y contraseña.");
+      } else {
+        setGeneralError("Error del servidor. Inténtalo más tarde.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,7 +120,19 @@ function Login() {
             {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
           </div>
 
-          <button type="submit" className="btn btn-outline-primary w-100">Iniciar Sesión</button>
+          {generalError && (
+            <div style={{ color: "red", fontSize: "0.9em", marginBottom: "15px" }}>
+              {generalError}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn-outline-primary w-100"
+            disabled={loading}
+          >
+            {loading ? "Iniciando Sesión..." : "Iniciar Sesión"}
+          </button>
           <p><br />¿Olvidaste tu contraseña?</p>
         </form>
       </div>

@@ -1,9 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function HeaderAdmin() {
   const navigate = useNavigate();
+  const { logout, user } = useContext(AuthContext);
 
   const cerrarSesion = () => {
+    logout();
     navigate("/");
   };
 
@@ -18,7 +22,12 @@ function HeaderAdmin() {
         color: "white",
       }}
     >
-      <h1 style={{ margin: 0 }}>Panel Administrador Heartz</h1>
+      <h1 style={{ margin: 0 }}>
+        Panel Administrador Heartz
+        {user && <span style={{ fontSize: "0.8em", marginLeft: "10px" }}>
+          ({user.email})
+        </span>}
+      </h1>
       <div>
         <button
           onClick={cerrarSesion}

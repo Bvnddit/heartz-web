@@ -28,3 +28,8 @@ export const deleteUsuarioByRut = (rut) => api.delete(`/usuarios/${rut}`);
 
 // Eliminar todos
 export const deleteAllUsuarios = () => api.delete("/usuarios/all");
+
+// ----------------- AUTENTICACIÓN -----------------
+
+// Login de usuario
+export const loginUsuario = (loginData) => api.post("/auth/login", loginData);

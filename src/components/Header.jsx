@@ -1,12 +1,14 @@
 import { buscarViniloPorTitulo, buscarArtistaPorNombre } from "../util/Validaciones.js";
 import { vinilos } from "../Data/vinilos";
 import { artistas } from "../data/artistas";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 function Header() {
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout, isAdmin } = useContext(AuthContext);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -67,12 +69,38 @@ function Header() {
 
 
           <div className="header-buttons me-3">
-                        {/* Botón de carrito */}
+            {/* Botón de carrito */}
             <button className="btn btn-outline-light m-3e-2 me-2" onClick={() => navigate("/carrito")}>
               🛒 Carrito
             </button>
-            <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
-            <Link to="/Registro" className="btn btn-light me-2">Registrarse</Link>
+
+            {isAuthenticated ? (
+              <>
+                {/* Usuario autenticado */}
+                <span className="text-light me-2">
+                  Bienvenido, {user.email}
+                  {user.rol === "ADMIN" && " (Admin)"}
+                </span>
+                {isAdmin() && (
+                  <Link to="/admin" className="btn btn-warning me-2">Panel Admin</Link>
+                )}
+                <button
+                  className="btn btn-outline-danger me-2"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Usuario no autenticado */}
+                <Link to="/Login" className="btn btn-outline-light me-2">Iniciar Sesión</Link>
+                <Link to="/Registro" className="btn btn-light me-2">Registrarse</Link>
+              </>
+            )}
           </div>
         </div>
       </div>
