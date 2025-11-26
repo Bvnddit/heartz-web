@@ -21,12 +21,6 @@ function BarraLateralAdmin() {
           <Link to="/admin-vinilos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Vinilos</Link>
         </li>
         <li className="nav-item">
-          <Link to="/admin-artistas" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Artistas</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/admin-generos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Generos</Link>
-        </li>
-        <li className="nav-item">
           <Link to="/admin-reportes" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Reportes</Link>
         </li>
         <li className="nav-item">
