@@ -61,8 +61,6 @@ function AdminPerfil() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 }

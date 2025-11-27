@@ -457,6 +457,22 @@ h6 {
   .mobile-nav-active .navmenu>ul {
     display: block;
   }
+
+  /* Estilos para menú móvil responsivo personalizado */
+  .navmenu-mobile-open .navmenu-mobile-content {
+    display: block !important;
+  }
+
+  .navmenu-mobile-content {
+    display: none;
+    padding: 20px;
+    background-color: var(--nav-mobile-background-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .navmenu-mobile-content .btn {
+    margin-bottom: 10px;
+  }
 }
 
 /*--------------------------------------------------------------

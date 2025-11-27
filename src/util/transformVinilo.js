@@ -1,6 +1,3 @@
-import { artistas } from "../data/artistas";
-import { generos } from "../data/generos";
-
 /**
  * Transforma un vinilo del formato del backend al formato del frontend
  * @param {Object} viniloBackend - Vinilo en formato del backend
@@ -18,18 +15,6 @@ export const transformVinilo = (viniloBackend) => {
       imgLength: viniloBackend.img?.length
     });
   }
-
-  // Buscar el ID del artista por nombre
-  const artistaEncontrado = artistas.find(
-    (a) => a.nombre.toLowerCase() === viniloBackend.artista?.toLowerCase()
-  );
-  const id_art = artistaEncontrado ? artistaEncontrado.id_art : null;
-
-  // Buscar el ID del género por nombre
-  const generoEncontrado = generos.find(
-    (g) => g.nombre.toLowerCase().trim() === viniloBackend.genero?.toLowerCase().trim()
-  );
-  const id_gen = generoEncontrado ? generoEncontrado.id_gen : null;
 
   // Convertir img de string a array si es necesario
   let imgArray = [];
@@ -50,13 +35,9 @@ export const transformVinilo = (viniloBackend) => {
     }
   }
 
-  // NO aplicar proxy automáticamente - dejar que el componente maneje los errores
-  // El proxy puede causar más problemas que soluciones
-  // Si es necesario, se puede aplicar en el componente cuando falle la carga
-
   // Asegurarse de que siempre sea un array, incluso si está vacío
   const imgFinal = Array.isArray(imgArray) && imgArray.length > 0 ? imgArray : [];
-  
+
   // Debug: ver la imagen transformada (solo en desarrollo)
   if (import.meta.env.DEV && imgFinal.length > 0) {
     console.log("Imagen transformada:", {
@@ -69,8 +50,12 @@ export const transformVinilo = (viniloBackend) => {
   return {
     id_vin: viniloBackend.idVin || viniloBackend.id_vin,
     titulo: viniloBackend.nombre || viniloBackend.titulo,
-    id_art: id_art || viniloBackend.id_art,
-    id_gen: id_gen || viniloBackend.id_gen,
+    // Usamos el nombre directamente ya que no tenemos IDs estáticos
+    artista: viniloBackend.artista,
+    genero: viniloBackend.genero,
+    // Mantenemos id_art e id_gen por compatibilidad si es necesario, pero usando el nombre como ID o null
+    id_art: viniloBackend.artista,
+    id_gen: viniloBackend.genero,
     año: viniloBackend.anno || viniloBackend.año,
     precio: viniloBackend.precio,
     formato: viniloBackend.formato,

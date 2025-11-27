@@ -7,20 +7,18 @@ import {
   updateVinilo,
   deleteViniloById
 } from "../api/vinilos";
-import { artistas as artistasData } from "../data/artistas";
-import { generos as generosData } from "../data/generos";
+
 
 function AdminVinilos() {
-  const [artistas] = useState(artistasData);
-  const [generos] = useState(generosData);
+
   const [vinilos, setVinilos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
     nombre: "",
-    artista: artistasData[0]?.nombre || "",
-    genero: generosData[0]?.nombre || "",
+    artista: "",
+    genero: "",
     anno: "",
     precio: "",
     formato: "",
@@ -133,8 +131,8 @@ function AdminVinilos() {
   const resetForm = () => {
     setForm({
       nombre: "",
-      artista: artistasData[0]?.nombre || "",
-      genero: generosData[0]?.nombre || "",
+      artista: "",
+      genero: "",
       anno: "",
       precio: "",
       formato: "",
@@ -227,6 +225,29 @@ function AdminVinilos() {
                     />
                   </div>
 
+                </div>
+
+                <div className="row mb-2">
+                  <div className="col-md-6 mb-2">
+                    <input
+                      className="form-control"
+                      placeholder="Artista *"
+                      name="artista"
+                      value={form.artista}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-2">
+                    <input
+                      className="form-control"
+                      placeholder="Género *"
+                      name="genero"
+                      value={form.genero}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="row mb-2">

@@ -27,6 +27,10 @@ function AppContent() {
   const hideHeaderRoutes = ['/admin'];
   const shouldHideHeader = hideHeaderRoutes.some(path => location.pathname.startsWith(path));
 
+  // Rutas donde NO se debe mostrar el footer
+  const hideFooterRoutes = ['/login', '/registro'];
+  const shouldHideFooter = hideFooterRoutes.includes(location.pathname.toLowerCase()) || location.pathname.startsWith('/admin');
+
   return (
     <div className="app-container">
       {!shouldHideHeader && <Header />}
@@ -53,7 +57,7 @@ function AppContent() {
           <Route path="/admin-usuarios" element={<AdminUsuarios />} />
         </Routes>
       </div>
-      <Footer />
+      {!shouldHideFooter && <Footer />}
     </div>
   );
 }

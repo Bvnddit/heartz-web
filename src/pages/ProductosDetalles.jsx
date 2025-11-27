@@ -1,8 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { vinilos as vinilosBase } from "../data/vinilos";
-import { artistas } from "../data/artistas";
-import { generos } from "../data/generos";
+
 import "../assets/css/main.css";
 import { CarritoContext } from "../context/CarritoContext.jsx";
 import { getViniloById } from "../api/vinilos";
@@ -24,26 +22,14 @@ const ProductosDetalles = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Intentar cargar desde la API
         const response = await getViniloById(id_vin);
         const viniloAPI = transformVinilo(response.data);
         setVinilo(viniloAPI);
       } catch (err) {
         console.error("Error al cargar vinilo:", err);
-        
-        // Fallback a datos locales
-        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
-        const vinilosCombinados = [...vinilosBase, ...vinilosGuardados];
-        const viniloLocal = vinilosCombinados.find(
-          (v) => v.id_vin === parseInt(id_vin)
-        );
-        
-        if (viniloLocal) {
-          setVinilo(viniloLocal);
-        } else {
-          setError("Vinilo no encontrado");
-        }
+        setError("Vinilo no encontrado o error de conexión");
       } finally {
         setLoading(false);
       }
@@ -61,10 +47,8 @@ const ProductosDetalles = () => {
     }
   }, [vinilo?.img?.length]);
 
-  const getArtista = (id_art) =>
-    artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
-  const getGenero = (id_gen) =>
-    generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
+  const getArtista = (id_art) => id_art || "Desconocido";
+  const getGenero = (id_gen) => id_gen || "Sin género";
 
   const handleAñadir = () => {
     agregarProducto(vinilo); // <-- agregamos al carrito
@@ -129,8 +113,8 @@ const ProductosDetalles = () => {
                     src={vinilo.img[imgIndex]}
                     alt={`${vinilo.titulo} ${imgIndex + 1}`}
                     className="card-img-top"
-                    style={{ 
-                      height: "500px", 
+                    style={{
+                      height: "500px",
                       width: "100%",
                       objectFit: "cover",
                       display: "block"
@@ -171,7 +155,7 @@ const ProductosDetalles = () => {
                       src={imagen}
                       alt={`mini ${index + 1}`}
                       className={`rounded-3 shadow-sm ${imgIndex === index ? "border border-3 border-light" : "opacity-50"
-                      }`}
+                        }`}
                       style={{
                         width: "80px",
                         height: "80px",
@@ -273,12 +257,12 @@ const ProductosDetalles = () => {
                   {vinilo.listaDeCanciones && vinilo.listaDeCanciones.length > 0 ? (
                     <ol className="list-group list-group-flush">
                       {vinilo.listaDeCanciones.map((cancion, index) => (
-                      <li
-                        key={index}
-                        className="list-group-item bg-transparent text-light border-secondary py-2"
-                      >
-                        <span className="text-white-50 me-2">{String(index + 1).padStart(2, '0')}.</span>
-                        {cancion}
+                        <li
+                          key={index}
+                          className="list-group-item bg-transparent text-light border-secondary py-2"
+                        >
+                          <span className="text-white-50 me-2">{String(index + 1).padStart(2, '0')}.</span>
+                          {cancion}
                         </li>
                       ))}
                     </ol>

@@ -1,9 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { vinilos as vinilosBase } from "../data/vinilos";
-import { artistas as artistasBase } from "../data/artistas";
-import { generos as generosBase } from "../data/generos";
-import { CarritoContext } from "../context/CarritoContext.jsx"; 
+
+import { CarritoContext } from "../context/CarritoContext.jsx";
 import { filtrarPorGenero, filtrarPorArtista, ordenarPorPrecio } from "../util/Validaciones";
 import { getAllVinilos } from "../api/vinilos";
 import { transformVinilos } from "../util/transformVinilo";
@@ -29,33 +27,34 @@ const Productos = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Cargar artistas y géneros (mantener estáticos por ahora)
-    const artistasGuardados = JSON.parse(localStorage.getItem("artistas")) || [];
-    const generosGuardados = JSON.parse(localStorage.getItem("generos")) || [];
-    setArtistas([...artistasBase, ...artistasGuardados]);
-    setGeneros([...generosBase, ...generosGuardados]);
-
     // Cargar vinilos desde la API
     const cargarVinilos = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await getAllVinilos();
         const vinilosAPI = transformVinilos(response.data);
-        
-        // Combinar con vinilos guardados en localStorage (si existen)
-        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
-        const vinilosCombinados = [...vinilosAPI, ...vinilosGuardados];
-        
-        setVinilos(vinilosCombinados);
+
+        setVinilos(vinilosAPI);
+
+        // Extraer artistas y géneros únicos de los vinilos cargados
+        const uniqueArtistas = [...new Set(vinilosAPI.map(v => v.artista).filter(Boolean))].map(nombre => ({
+          id_art: nombre,
+          nombre: nombre
+        }));
+        const uniqueGeneros = [...new Set(vinilosAPI.map(v => v.genero).filter(Boolean))].map(nombre => ({
+          id_gen: nombre,
+          nombre: nombre
+        }));
+
+        setArtistas(uniqueArtistas);
+        setGeneros(uniqueGeneros);
+
       } catch (err) {
         console.error("Error al cargar vinilos:", err);
-        setError("Error al cargar los vinilos. Mostrando datos locales.");
-        
-        // Fallback a datos locales si la API falla
-        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
-        setVinilos([...vinilosBase, ...vinilosGuardados]);
+        setError("Error al cargar los vinilos. Por favor, intenta de nuevo más tarde.");
+        setVinilos([]);
       } finally {
         setLoading(false);
       }
@@ -64,11 +63,9 @@ const Productos = () => {
     cargarVinilos();
   }, []);
 
-  const getArtista = (id_art) =>
-    artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
+  const getArtista = (id_art) => id_art || "Desconocido";
 
-  const getGenero = (id_gen) =>
-    generos.find((g) => g.id_gen === id_gen)?.nombre || "Sin género";
+  const getGenero = (id_gen) => id_gen || "Sin género";
 
   const handleVer = (vinilo) => {
     const card = document.getElementById(`vinilo-${vinilo.id_vin}`);
@@ -81,10 +78,10 @@ const Productos = () => {
     alert(`Añadido al carrito: ${vinilo.titulo}`);
   };
 
-// --- FILTROS ---
-let vinilosFiltrados = filtrarPorGenero(vinilos, filtroGenero);
-vinilosFiltrados = filtrarPorArtista(vinilosFiltrados, filtroArtista);
-vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
+  // --- FILTROS ---
+  let vinilosFiltrados = filtrarPorGenero(vinilos, filtroGenero);
+  vinilosFiltrados = filtrarPorArtista(vinilosFiltrados, filtroArtista);
+  vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
 
   return (
     <div className="container my-5">
@@ -161,68 +158,68 @@ vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
         <div className="row">
           {vinilosFiltrados.length > 0 ? (
             vinilosFiltrados.map((vinilo) => (
-            <div key={vinilo.id_vin} id={`vinilo-${vinilo.id_vin}`} className="col-md-4 mb-4">
-              <div className="card h-100 shadow-sm border-0">
-                {vinilo.img && Array.isArray(vinilo.img) && vinilo.img.length > 0 ? (
-                  <ImagenVinilo
-                    src={vinilo.img[0]}
-                    className="card-img-top"
-                    alt={vinilo.titulo}
-                    style={{ 
-                      cursor: "pointer", 
-                      transition: "transform 0.3s ease", 
-                      height: "300px", 
-                      width: "100%",
-                      objectFit: "cover",
-                      display: "block"
-                    }}
-                    onClick={() => handleVer(vinilo)}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                  />
-                ) : (
-                  <div
-                    className="bg-secondary text-white d-flex align-items-center justify-content-center"
-                    style={{ height: "300px", cursor: "pointer" }}
-                    onClick={() => handleVer(vinilo)}
-                  >
-                    <div className="text-center">
-                      <i className="bi bi-image" style={{ fontSize: "2rem", opacity: 0.5 }}></i>
-                      <p className="mt-2 mb-0 small">Sin imagen</p>
+              <div key={vinilo.id_vin} id={`vinilo-${vinilo.id_vin}`} className="col-md-4 mb-4">
+                <div className="card h-100 shadow-sm border-0">
+                  {vinilo.img && Array.isArray(vinilo.img) && vinilo.img.length > 0 ? (
+                    <ImagenVinilo
+                      src={vinilo.img[0]}
+                      className="card-img-top"
+                      alt={vinilo.titulo}
+                      style={{
+                        cursor: "pointer",
+                        transition: "transform 0.3s ease",
+                        height: "300px",
+                        width: "100%",
+                        objectFit: "cover",
+                        display: "block"
+                      }}
+                      onClick={() => handleVer(vinilo)}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                  ) : (
+                    <div
+                      className="bg-secondary text-white d-flex align-items-center justify-content-center"
+                      style={{ height: "300px", cursor: "pointer" }}
+                      onClick={() => handleVer(vinilo)}
+                    >
+                      <div className="text-center">
+                        <i className="bi bi-image" style={{ fontSize: "2rem", opacity: 0.5 }}></i>
+                        <p className="mt-2 mb-0 small">Sin imagen</p>
+                      </div>
                     </div>
+                  )}
+
+                  <div className="card-body text-center">
+                    <h5 className="card-title fw-bold">{vinilo.titulo}</h5>
+                    <p className="card-text text-muted mb-1">{getArtista(vinilo.id_art)}</p>
+                    <p className="card-text text-muted mb-1">{getGenero(vinilo.id_gen)}</p>
+                    <p className="card-text text-muted mb-1">Formato: {vinilo.formato}</p>
+                    <p className="fw-bold text-success">${vinilo.precio.toLocaleString("es-CL")}</p>
                   </div>
-                )}
 
-                <div className="card-body text-center">
-                  <h5 className="card-title fw-bold">{vinilo.titulo}</h5>
-                  <p className="card-text text-muted mb-1">{getArtista(vinilo.id_art)}</p>
-                  <p className="card-text text-muted mb-1">{getGenero(vinilo.id_gen)}</p>
-                  <p className="card-text text-muted mb-1">Formato: {vinilo.formato}</p>
-                  <p className="fw-bold text-success">${vinilo.precio.toLocaleString("es-CL")}</p>
-                </div>
-
-                <div className="card-footer bg-transparent border-0 d-flex justify-content-center gap-2">
-                  <button
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => handleVer(vinilo)}
-                  >
-                    Ver
-                  </button>
-                  <button
-                    className="btn btn-outline-success btn-sm"
-                    onClick={() => handleAñadir(vinilo)}
-                  >
-                    Añadir al carrito
-                  </button>
+                  <div className="card-footer bg-transparent border-0 d-flex justify-content-center gap-2">
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => handleVer(vinilo)}
+                    >
+                      Ver
+                    </button>
+                    <button
+                      className="btn btn-outline-success btn-sm"
+                      onClick={() => handleAñadir(vinilo)}
+                    >
+                      Añadir al carrito
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-            ) : (
-              <p className="text-center text-muted">No hay vinilos disponibles.</p>
-            )}
-          </div>
-        )}
+            ))
+          ) : (
+            <p className="text-center text-muted">No hay vinilos disponibles.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

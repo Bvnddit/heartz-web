@@ -81,13 +81,12 @@ function AdminReportes() {
                     <td>{r.descripcion}</td>
                     <td>
                       <span
-                        className={`badge ${
-                          r.estado === "Completado"
-                            ? "bg-success"
-                            : r.estado === "Pendiente"
+                        className={`badge ${r.estado === "Completado"
+                          ? "bg-success"
+                          : r.estado === "Pendiente"
                             ? "bg-danger"
                             : "bg-warning text-dark"
-                        }`}
+                          }`}
                       >
                         {r.estado}
                       </span>
@@ -99,8 +98,6 @@ function AdminReportes() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 }

@@ -1,28 +1,32 @@
-import React from "react";
-import Carousel from "../components/Carousel";
-import vinilo1 from "../assets/img/albums/deftones/saturday-night-wrist-cover.jpg";
-import vinilo2 from "../assets/img/albums/magdalena-bay/imaginal-disk-cover.jpg";
-import vinilo3 from "../assets/img/albums/casiopea/casiopea-cover.jpg";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Carousel from "../components/Carousel";
 import ProximosProductos from "../components/ProximosProductos";
+import { getAllVinilos } from "../api/vinilos";
+import { transformVinilos } from "../util/transformVinilo";
+import ImagenVinilo from "../components/ImagenVinilo";
 
-import { useEffect } from "react";
 const Home = () => {
   const navigate = useNavigate();
+  const [destacados, setDestacados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // TEST DE BACKEND
   useEffect(() => {
-    const testBackend = async () => {
+    const cargarDestacados = async () => {
       try {
-        const res = await fetch(import.meta.env.VITE_API_URL + "/usuarios"); // <-- tu endpoint
-        const data = await res.json();
-        console.log("Backend funcionando:", data);
+        setLoading(true);
+        const response = await getAllVinilos();
+        const vinilosAPI = transformVinilos(response.data);
+        // Tomar los primeros 3 vinilos como destacados
+        setDestacados(vinilosAPI.slice(0, 3));
       } catch (error) {
-        console.error("Error al conectar con el backend:", error);
+        console.error("Error al cargar destacados:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    testBackend();
+    cargarDestacados();
   }, []);
 
   return (
@@ -37,104 +41,69 @@ const Home = () => {
 
         <div className="album py-5 bg-light">
           <div className="container">
-            <div className="row">
-              {/* Producto 1 */}
-              <div className="col-md-4">
-                <div className="card mb-4 box-shadow">
-                  <div
-                    onClick={() => navigate("/productos/1")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={vinilo1}
-                      alt="Saturday Night Wrist - Deftones"
-                      className="img-fluid producto-img"
-                    />
-                  </div>
-                  <div className="card-body">
-                    <p className="card-text text-muted">
-                      Saturday Night Wrist - Deftones (Vinilo)
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => navigate("/productos/1")}
-                        >
-                          Ver
-                        </button>
-                      </div>
-                      <small className="text-muted">$44.900</small>
-                    </div>
-                  </div>
+            {loading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Cargando...</span>
                 </div>
               </div>
-
-              {/* Producto 2 */}
-              <div className="col-md-4">
-                <div className="card mb-4 box-shadow">
-                  <div
-                    onClick={() => navigate("/productos/4")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={vinilo2}
-                      alt="Imaginal Disk - Magdalena Bay"
-                      className="img-fluid producto-img"
-                    />
-                  </div>
-                  <div className="card-body">
-                    <p className="card-text text-muted">
-                      Imaginal Disk - Magdalena Bay (Vinilo)
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => navigate("/productos/4")}
+            ) : (
+              <div className="row">
+                {destacados.length > 0 ? (
+                  destacados.map((vinilo) => (
+                    <div key={vinilo.id_vin} className="col-md-4">
+                      <div className="card mb-4 box-shadow h-100">
+                        <div
+                          onClick={() => navigate(`/productos/${vinilo.id_vin}`)}
+                          style={{ cursor: "pointer", overflow: "hidden" }}
                         >
-                          Ver
-                        </button>
+                          {vinilo.img && Array.isArray(vinilo.img) && vinilo.img.length > 0 ? (
+                            <ImagenVinilo
+                              src={vinilo.img[0]}
+                              alt={`${vinilo.titulo} - ${vinilo.artista}`}
+                              className="img-fluid producto-img"
+                              style={{
+                                width: "100%",
+                                height: "300px",
+                                objectFit: "cover",
+                                transition: "transform 0.3s ease"
+                              }}
+                              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                            />
+                          ) : (
+                            <div
+                              className="bg-secondary text-white d-flex align-items-center justify-content-center"
+                              style={{ height: "300px" }}
+                            >
+                              <i className="bi bi-disc" style={{ fontSize: "3rem" }}></i>
+                            </div>
+                          )}
+                        </div>
+                        <div className="card-body d-flex flex-column">
+                          <p className="card-text text-muted mb-auto">
+                            {vinilo.titulo} - {vinilo.artista} (Vinilo)
+                          </p>
+                          <div className="d-flex justify-content-between align-items-center mt-3">
+                            <div className="btn-group">
+                              <button
+                                className="btn btn-sm btn-outline-secondary"
+                                onClick={() => navigate(`/productos/${vinilo.id_vin}`)}
+                              >
+                                Ver
+                              </button>
+                            </div>
+                            <small className="text-muted">${vinilo.precio.toLocaleString("es-CL")}</small>
+                          </div>
+                        </div>
                       </div>
-                      <small className="text-muted">$39.900</small>
                     </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  <p className="text-center text-muted">No hay productos destacados disponibles.</p>
+                )}
               </div>
-
-              {/* Producto 3 */}
-              <div className="col-md-4">
-                <div className="card mb-4 box-shadow">
-                  <div
-                    onClick={() => navigate("/productos/6")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={vinilo3}
-                      alt="Casiopea - Casiopea"
-                      className="img-fluid producto-img"
-                    />
-                  </div>
-                  <div className="card-body">
-                    <p className="card-text text-muted">
-                      Casiopea - Casiopea (Vinilo)
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => navigate("/productos/6")}
-                        >
-                          Ver
-                        </button>
-                      </div>
-                      <small className="text-muted">$47.900</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+            )}
           </div>
         </div>
       </div>
