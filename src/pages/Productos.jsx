@@ -5,6 +5,9 @@ import { artistas as artistasBase } from "../data/artistas";
 import { generos as generosBase } from "../data/generos";
 import { CarritoContext } from "../context/CarritoContext.jsx"; 
 import { filtrarPorGenero, filtrarPorArtista, ordenarPorPrecio } from "../util/Validaciones";
+import { getAllVinilos } from "../api/vinilos";
+import { transformVinilos } from "../util/transformVinilo";
+import ImagenVinilo from "../components/ImagenVinilo";
 
 
 const Productos = () => {
@@ -22,15 +25,43 @@ const Productos = () => {
   const [vinilos, setVinilos] = useState([]);
   const [artistas, setArtistas] = useState([]);
   const [generos, setGeneros] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
+    // Cargar artistas y géneros (mantener estáticos por ahora)
     const artistasGuardados = JSON.parse(localStorage.getItem("artistas")) || [];
     const generosGuardados = JSON.parse(localStorage.getItem("generos")) || [];
-
-    setVinilos([...vinilosBase, ...vinilosGuardados]);
     setArtistas([...artistasBase, ...artistasGuardados]);
     setGeneros([...generosBase, ...generosGuardados]);
+
+    // Cargar vinilos desde la API
+    const cargarVinilos = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await getAllVinilos();
+        const vinilosAPI = transformVinilos(response.data);
+        
+        // Combinar con vinilos guardados en localStorage (si existen)
+        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
+        const vinilosCombinados = [...vinilosAPI, ...vinilosGuardados];
+        
+        setVinilos(vinilosCombinados);
+      } catch (err) {
+        console.error("Error al cargar vinilos:", err);
+        setError("Error al cargar los vinilos. Mostrando datos locales.");
+        
+        // Fallback a datos locales si la API falla
+        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
+        setVinilos([...vinilosBase, ...vinilosGuardados]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarVinilos();
   }, []);
 
   const getArtista = (id_art) =>
@@ -107,18 +138,44 @@ vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
         </div>
       </div>
 
+      {/* Mensaje de error */}
+      {error && (
+        <div className="alert alert-warning alert-dismissible fade show" role="alert">
+          {error}
+          <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+        </div>
+      )}
+
+      {/* Estado de carga */}
+      {loading && (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-3">Cargando vinilos...</p>
+        </div>
+      )}
+
       {/*  Tarjetas de vinilos */}
-      <div className="row">
-        {vinilosFiltrados.length > 0 ? (
-          vinilosFiltrados.map((vinilo) => (
+      {!loading && (
+        <div className="row">
+          {vinilosFiltrados.length > 0 ? (
+            vinilosFiltrados.map((vinilo) => (
             <div key={vinilo.id_vin} id={`vinilo-${vinilo.id_vin}`} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm border-0">
-                {vinilo.img.length > 0 ? (
-                  <img
+                {vinilo.img && Array.isArray(vinilo.img) && vinilo.img.length > 0 ? (
+                  <ImagenVinilo
                     src={vinilo.img[0]}
                     className="card-img-top"
                     alt={vinilo.titulo}
-                    style={{ cursor: "pointer", transition: "transform 0.3s ease" }}
+                    style={{ 
+                      cursor: "pointer", 
+                      transition: "transform 0.3s ease", 
+                      height: "300px", 
+                      width: "100%",
+                      objectFit: "cover",
+                      display: "block"
+                    }}
                     onClick={() => handleVer(vinilo)}
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -126,10 +183,13 @@ vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
                 ) : (
                   <div
                     className="bg-secondary text-white d-flex align-items-center justify-content-center"
-                    style={{ height: "200px", cursor: "pointer" }}
+                    style={{ height: "300px", cursor: "pointer" }}
                     onClick={() => handleVer(vinilo)}
                   >
-                    Sin imagen
+                    <div className="text-center">
+                      <i className="bi bi-image" style={{ fontSize: "2rem", opacity: 0.5 }}></i>
+                      <p className="mt-2 mb-0 small">Sin imagen</p>
+                    </div>
                   </div>
                 )}
 
@@ -158,10 +218,11 @@ vinilosFiltrados = ordenarPorPrecio(vinilosFiltrados, ordenPrecio);
               </div>
             </div>
           ))
-        ) : (
-          <p className="text-center text-muted">No hay vinilos disponibles.</p>
+            ) : (
+              <p className="text-center text-muted">No hay vinilos disponibles.</p>
+            )}
+          </div>
         )}
-      </div>
     </div>
   );
 };

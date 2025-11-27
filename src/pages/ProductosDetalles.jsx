@@ -1,27 +1,65 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { vinilos } from "../data/vinilos";
+import { vinilos as vinilosBase } from "../data/vinilos";
 import { artistas } from "../data/artistas";
 import { generos } from "../data/generos";
 import "../assets/css/main.css";
 import { CarritoContext } from "../context/CarritoContext.jsx";
+import { getViniloById } from "../api/vinilos";
+import { transformVinilo } from "../util/transformVinilo";
+import ImagenVinilo from "../components/ImagenVinilo";
 
 const ProductosDetalles = () => {
   const { agregarProducto } = useContext(CarritoContext);
   const { id_vin } = useParams();
   const navigate = useNavigate();
 
-  const vinilo = vinilos.find((v) => v.id_vin === parseInt(id_vin));
-  if (!vinilo) return <p>Vinilo no encontrado</p>;
-
+  const [vinilo, setVinilo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setImgIndex((prev) => (prev + 1) % vinilo.img.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [vinilo.img.length]);
+    const cargarVinilo = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Intentar cargar desde la API
+        const response = await getViniloById(id_vin);
+        const viniloAPI = transformVinilo(response.data);
+        setVinilo(viniloAPI);
+      } catch (err) {
+        console.error("Error al cargar vinilo:", err);
+        
+        // Fallback a datos locales
+        const vinilosGuardados = JSON.parse(localStorage.getItem("vinilos")) || [];
+        const vinilosCombinados = [...vinilosBase, ...vinilosGuardados];
+        const viniloLocal = vinilosCombinados.find(
+          (v) => v.id_vin === parseInt(id_vin)
+        );
+        
+        if (viniloLocal) {
+          setVinilo(viniloLocal);
+        } else {
+          setError("Vinilo no encontrado");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarVinilo();
+  }, [id_vin]);
+
+  useEffect(() => {
+    if (vinilo && vinilo.img && vinilo.img.length > 0) {
+      const interval = setInterval(() => {
+        setImgIndex((prev) => (prev + 1) % vinilo.img.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [vinilo?.img?.length]);
 
   const getArtista = (id_art) =>
     artistas.find((a) => a.id_art === id_art)?.nombre || "Desconocido";
@@ -34,9 +72,42 @@ const ProductosDetalles = () => {
   };
 
   const handleComprarAhora = () => {
-    agregarProducto(vinilo); // Añadir al carrito
-    navigate("/compra"); // Redirigir a la página de compra
+    if (vinilo) {
+      agregarProducto(vinilo); // Añadir al carrito
+      navigate("/compra"); // Redirigir a la página de compra
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="producto-detalle blanco-degradado-background min-vh-100 py-5 d-flex justify-content-center align-items-center">
+        <div className="text-center text-light">
+          <div className="spinner-border text-light mb-3" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p>Cargando vinilo...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !vinilo) {
+    return (
+      <div className="producto-detalle blanco-degradado-background min-vh-100 py-5">
+        <div className="container-lg">
+          <button
+            className="btn btn-outline-light mb-4 px-4 py-2 rounded-pill shadow-sm"
+            onClick={() => navigate(-1)}
+          >
+            <i className="bi bi-arrow-left me-2"></i>Volver
+          </button>
+          <div className="alert alert-danger" role="alert">
+            {error || "Vinilo no encontrado"}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="producto-detalle blanco-degradado-background min-vh-100 py-5">
@@ -53,15 +124,32 @@ const ProductosDetalles = () => {
           <div className="col-lg-6">
             <div className="position-relative">
               <div className="card bg-dark bg-opacity-25 border-0 shadow-lg rounded-4 overflow-hidden">
-                <img
-                  src={vinilo.img[imgIndex]}
-                  alt={`${vinilo.titulo} ${imgIndex + 1}`}
-                  className="card-img-top"
-                  style={{ height: "500px", objectFit: "cover" }}
-                />
+                {vinilo.img && Array.isArray(vinilo.img) && vinilo.img.length > 0 ? (
+                  <ImagenVinilo
+                    src={vinilo.img[imgIndex]}
+                    alt={`${vinilo.titulo} ${imgIndex + 1}`}
+                    className="card-img-top"
+                    style={{ 
+                      height: "500px", 
+                      width: "100%",
+                      objectFit: "cover",
+                      display: "block"
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="bg-secondary text-white d-flex align-items-center justify-content-center"
+                    style={{ height: "500px" }}
+                  >
+                    <div className="text-center p-4">
+                      <i className="bi bi-image" style={{ fontSize: "3rem", opacity: 0.5 }}></i>
+                      <p className="mt-2 mb-0">Sin imagen disponible</p>
+                    </div>
+                  </div>
+                )}
                 <div className="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient bg-dark bg-opacity-50">
                   <div className="d-flex justify-content-center gap-2">
-                    {vinilo.img.map((_, index) => (
+                    {vinilo.img && vinilo.img.length > 0 && vinilo.img.map((_, index) => (
                       <button
                         key={index}
                         className={`btn btn-sm rounded-circle ${imgIndex === index ? "btn-light" : "btn-outline-light"
@@ -75,29 +163,31 @@ const ProductosDetalles = () => {
               </div>
 
               {/* Miniaturas */}
-              <div className="d-flex gap-2 mt-3 justify-content-center">
-                {vinilo.img.map((imagen, index) => (
-                  <img
-                    key={index}
-                    src={imagen}
-                    alt={`mini ${index + 1}`}
-                    className={`rounded-3 shadow-sm ${imgIndex === index ? "border border-3 border-light" : "opacity-50"
+              {vinilo.img && vinilo.img.length > 0 && (
+                <div className="d-flex gap-2 mt-3 justify-content-center">
+                  {vinilo.img.map((imagen, index) => (
+                    <ImagenVinilo
+                      key={index}
+                      src={imagen}
+                      alt={`mini ${index + 1}`}
+                      className={`rounded-3 shadow-sm ${imgIndex === index ? "border border-3 border-light" : "opacity-50"
                       }`}
-                    style={{
-                      width: "80px",
-                      height: "80px",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease"
-                    }}
-                    onClick={() => setImgIndex(index)}
-                    onMouseEnter={(e) => e.target.style.opacity = "1"}
-                    onMouseLeave={(e) => {
-                      if (imgIndex !== index) e.target.style.opacity = "0.5";
-                    }}
-                  />
-                ))}
-              </div>
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease"
+                      }}
+                      onClick={() => setImgIndex(index)}
+                      onMouseEnter={(e) => e.target.style.opacity = "1"}
+                      onMouseLeave={(e) => {
+                        if (imgIndex !== index) e.target.style.opacity = "0.5";
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -180,17 +270,21 @@ const ProductosDetalles = () => {
                   Lista de canciones
                 </h5>
                 <div className="overflow-auto" style={{ maxHeight: "300px" }}>
-                  <ol className="list-group list-group-flush">
-                    {vinilo.listaDeCanciones.map((cancion, index) => (
+                  {vinilo.listaDeCanciones && vinilo.listaDeCanciones.length > 0 ? (
+                    <ol className="list-group list-group-flush">
+                      {vinilo.listaDeCanciones.map((cancion, index) => (
                       <li
                         key={index}
                         className="list-group-item bg-transparent text-light border-secondary py-2"
                       >
                         <span className="text-white-50 me-2">{String(index + 1).padStart(2, '0')}.</span>
                         {cancion}
-                      </li>
-                    ))}
-                  </ol>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="text-white-50 text-center py-3">No hay lista de canciones disponible</p>
+                  )}
                 </div>
               </div>
             </div>
