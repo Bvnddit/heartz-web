@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { validarEmail, validarPassword, validarNombre, validarRut } from "../util/Validaciones.js";
+import { createUsuario } from "../api/usuarios";
 
 function Registro() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [rut, setRut] = useState("");
   const [nombre, setNombre] = useState("");
@@ -13,9 +16,12 @@ function Registro() {
   const [nombreError, setNombreError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [fechaError, setFechaError] = useState("");
+  const [generalError, setGeneralError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setGeneralError("");
 
     const emailErr = validarEmail(email);
     const rutErr = validarRut(rut);
@@ -41,6 +47,46 @@ function Registro() {
 
     if (emailErr || rutErr || nombreErr || passwordErr || fechaErr) return;
 
+    setLoading(true);
+
+    try {
+      // Preparar los datos del usuario con rol CLIENTE
+      const usuarioData = {
+        rut: rut,
+        nombre: nombre,
+        correo: email,
+        contrasena: password,
+        rol: "CLIENTE" // El rol debe ser "CLIENTE" según la base de datos
+      };
+
+      const response = await createUsuario(usuarioData);
+      
+      console.log("Usuario registrado exitosamente:", response.data);
+      
+      // Mostrar mensaje de éxito y redirigir al login
+      alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      navigate("/login");
+      
+    } catch (error) {
+      console.error("Error al registrar usuario:", error);
+      
+      if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || error.response?.data || "Error al registrar el usuario";
+        setGeneralError(errorMessage);
+      } else if (error.response?.data) {
+        // Si el backend devuelve un mensaje de error
+        const errorMessage = typeof error.response.data === 'string' 
+          ? error.response.data 
+          : error.response.data.message || "Error al registrar el usuario";
+        setGeneralError(errorMessage);
+      } else if (error.message === "Network Error") {
+        setGeneralError("Error de conexión. Verifica que el servidor esté corriendo.");
+      } else {
+        setGeneralError("Error al registrar el usuario. Por favor, intenta de nuevo.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const hoy = new Date();
@@ -108,19 +154,6 @@ function Registro() {
             {nombreError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{nombreError}</div>}
           </div>
 
-          <div className="form-floating mb-3">
-            <input
-              type="date"
-              className="form-control form-control-sm"
-              placeholder="Fecha de nacimiento"
-              value={fechaNacimiento}
-              onChange={(e) => setFechaNacimiento(e.target.value)}
-              max={maxDate}
-              style={{ borderColor: fechaError ? "red" : "" }}
-            />
-            <label>Fecha de nacimiento</label>
-            {fechaError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{fechaError}</div>}
-          </div>
 
           <div className="form-floating mb-4">
             <input
@@ -135,7 +168,19 @@ function Registro() {
             {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
           </div>
 
-          <button type="submit" className="btn btn-outline-primary w-100">Registrarse</button>
+          {generalError && (
+            <div style={{ color: "red", fontSize: "0.9em", marginBottom: "15px" }}>
+              {generalError}
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            className="btn btn-outline-primary w-100"
+            disabled={loading}
+          >
+            {loading ? "Registrando..." : "Registrarse"}
+          </button>
         </form>
       </div>
     </div>

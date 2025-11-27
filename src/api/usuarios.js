@@ -12,8 +12,8 @@ export const getUsuarioByRut = (rut) => api.get(`/usuarios/${rut}`);
 export const getUsuarioByCorreo = (correo) =>
     api.get(`/usuarios/correo/${correo}`);
 
-// Crear usuario (POST)
-export const createUsuario = (usuario) => api.post("/usuarios", usuario);
+// Crear usuario (POST) - Para registro público (sin autenticación)
+export const createUsuario = (usuario) => api.post("/usuarios/register", usuario);
 
 // Actualizar usuario COMPLETO (PUT)
 export const updateUsuario = (rut, usuario) =>
