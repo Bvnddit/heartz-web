@@ -63,7 +63,7 @@ function Footer() {
             <div className="container copyright text-center mt-4 pt-4 border-top border-secondary border-opacity-10">
                 <p className="mb-0">© <span>Copyright</span> <strong className="px-1">Heartz</strong> <span>Todos los derechos reservados</span></p>
                 <div className="credits text-secondary small mt-2">
-                    Diseñado con <i className="bi bi-heart-fill text-danger mx-1"></i> por el equipo Heartz
+                    Diseñado<i className="bi bi-heart-fill text-danger mx-1"></i>por el equipo Heartz
                 </div>
             </div>
         </footer>

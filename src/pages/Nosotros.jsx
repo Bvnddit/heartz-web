@@ -26,7 +26,7 @@ export default function Nosotros() {
             melómanos una experiencia única al reconectar con el formato clásico del vinilo.
             Fundada en 2020 en Santiago, la tienda se ha posicionado como un referente en el
             mercado nacional gracias a su catálogo diverso que incluye desde clásicos del rock,
-            jazz y soul hasta lanzamientos contemporáneos.  
+            jazz y soul hasta lanzamientos contemporáneos.
             <br /><br />
             Heartz realiza envíos a todo Chile y participa activamente en ferias musicales locales.
           </motion.p>
@@ -73,7 +73,6 @@ export default function Nosotros() {
         transition={{ duration: 1.2, delay: 0.8 }}
         className="text-center text-gray-600 py-8 text-sm border-t border-gray-800"
       >
-        © {new Date().getFullYear()} Heartz. Todos los derechos reservados.
       </motion.footer>
     </div>
   );

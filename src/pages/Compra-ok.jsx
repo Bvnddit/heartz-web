@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 const Compraok = () => {
   const location = useLocation();
   const formData = location.state || {}; // Fallback si no hay datos
+  const { ordenId, items } = formData;
 
   const handleMensaje = (mensaje) => {
     alert(mensaje);
@@ -19,11 +20,11 @@ const Compraok = () => {
               <section id="productos-comprados" className="py-3">
                 <div className="container">
                   <div className="text-end">
-                    <small>Código orden: ORDER12345</small>
+                    <small>Código orden: {ordenId || "N/A"}</small>
                   </div>
                   <h3 className="card-title">
                     <i className="bi bi-check-circle text-success" />{" "}
-                    Se ha realizado la compra. nro #1
+                    Se ha realizado la compra. nro #{ordenId || "N/A"}
                   </h3>
                   <div className="row">
                     <p className="card-text">Datos del cliente:</p>
@@ -74,7 +75,23 @@ const Compraok = () => {
                           <th>Subtotal</th>
                         </tr>
                       </thead>
-                      <tbody></tbody>
+                      <tbody>
+                        {items && items.map((item) => (
+                          <tr key={item.id_vin}>
+                            <td>
+                              <img
+                                src={item.img && item.img[0]}
+                                alt={item.titulo}
+                                style={{ height: "40px", objectFit: "cover", borderRadius: "3px" }}
+                              />
+                            </td>
+                            <td>{item.titulo}</td>
+                            <td>${item.precio.toLocaleString("es-CL")}</td>
+                            <td>{item.cantidad}</td>
+                            <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
                     </table>
                   </div>
 

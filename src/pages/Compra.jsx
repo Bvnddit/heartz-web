@@ -1,13 +1,69 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CarritoContext } from "../context/CarritoContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { useFormularioCompra } from "../util/Validaciones.js";
+import { useFormularioCompra, validarFormularioCompra } from "../util/Validaciones.js";
+import { createVenta } from "../api/ventas";
 
 const Compra = () => {
   const { carrito, total } = useContext(CarritoContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const { formData, errores, handleChange, handleCompra } = useFormularioCompra(navigate, total);
+  const { formData, errores, setErrores, handleChange } = useFormularioCompra(navigate, total);
+
+  const handleFinalizarCompra = async () => {
+    // 1. Validar formulario
+    const nuevosErrores = validarFormularioCompra(formData);
+    setErrores(nuevosErrores);
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      return; // Hay errores, no continuar
+    }
+
+    setLoading(true);
+
+    try {
+      // 2. Preparar payload para el backend
+      // Asumimos que el backend espera esta estructura. Ajustar según el modelo real.
+      const ventaData = {
+        fecha: new Date().toISOString(),
+        total: total,
+        estado: "Pendiente", // O el estado inicial que maneje el backend
+        // Datos del cliente (si el backend los guarda en la venta o crea un usuario al vuelo)
+        nombreCliente: formData.nombre,
+        apellidoCliente: formData.apellidos,
+        correoCliente: formData.correo,
+        direccionEntrega: `${formData.calle} ${formData.departamento || ""}, ${formData.comuna}, ${formData.region}`,
+
+        // Detalle de la venta
+        detalleVenta: carrito.map(item => ({
+          vinilo: { id_vin: item.id_vin }, // Enviamos solo el ID del vinilo
+          cantidad: item.cantidad,
+          precioUnitario: item.precio
+        }))
+      };
+
+      // 3. Llamar a la API
+      const response = await createVenta(ventaData);
+      console.log("Venta creada:", response.data);
+
+      // 4. Redirigir a éxito
+      navigate("/compra-ok", {
+        state: {
+          ...formData,
+          total,
+          ordenId: response.data.id_venta || response.data.id || "PENDIENTE", // Ajustar según respuesta
+          items: carrito
+        }
+      });
+
+    } catch (error) {
+      console.error("Error al procesar la compra:", error);
+      alert("Hubo un error al procesar tu compra. Por favor, intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container my-5 compraok-container">
@@ -177,9 +233,17 @@ const Compra = () => {
                 <div className="text-end">
                   <button
                     className="btn btn-success btn-lg"
-                    onClick={handleCompra}
+                    onClick={handleFinalizarCompra}
+                    disabled={loading}
                   >
-                    Pagar ahora <strong>${total.toLocaleString("es-CL")}</strong>
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Procesando...
+                      </>
+                    ) : (
+                      <>Pagar ahora <strong>${total.toLocaleString("es-CL")}</strong></>
+                    )}
                   </button>
                 </div>
               </div>

@@ -97,7 +97,7 @@ export const useFormularioCompra = (navigate, total) => {
     }
   };
 
-  return { formData, errores, handleChange, handleCompra };
+  return { formData, errores, setErrores, handleChange, handleCompra };
 };
 
 // Funciones para filtrar en productos
