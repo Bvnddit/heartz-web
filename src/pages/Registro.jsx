@@ -9,13 +9,14 @@ function Registro() {
   const [rut, setRut] = useState("");
   const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [emailError, setEmailError] = useState("");
   const [rutError, setRutError] = useState("");
   const [nombreError, setNombreError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [fechaError, setFechaError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,24 +29,18 @@ function Registro() {
     const nombreErr = validarNombre(nombre);
     const passwordErr = validarPassword(password);
 
-    let fechaErr = "";
-    if (!fechaNacimiento) {
-      fechaErr = "Por favor, selecciona tu fecha de nacimiento.";
-    } else {
-      const hoy = new Date();
-      const fecha18 = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
-      if (new Date(fechaNacimiento) > fecha18) {
-        fechaErr = "Debes ser mayor de 18 años.";
-      }
+    let confirmPassErr = "";
+    if (password !== confirmPassword) {
+      confirmPassErr = "Las contraseñas no coinciden.";
     }
 
     setEmailError(emailErr);
     setRutError(rutErr);
     setNombreError(nombreErr);
     setPasswordError(passwordErr);
-    setFechaError(fechaErr);
+    setConfirmPasswordError(confirmPassErr);
 
-    if (emailErr || rutErr || nombreErr || passwordErr || fechaErr) return;
+    if (emailErr || rutErr || nombreErr || passwordErr || confirmPassErr) return;
 
     setLoading(true);
 
@@ -60,23 +55,23 @@ function Registro() {
       };
 
       const response = await createUsuario(usuarioData);
-      
+
       console.log("Usuario registrado exitosamente:", response.data);
-      
+
       // Mostrar mensaje de éxito y redirigir al login
       alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
       navigate("/login");
-      
+
     } catch (error) {
       console.error("Error al registrar usuario:", error);
-      
+
       if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || error.response?.data || "Error al registrar el usuario";
         setGeneralError(errorMessage);
       } else if (error.response?.data) {
         // Si el backend devuelve un mensaje de error
-        const errorMessage = typeof error.response.data === 'string' 
-          ? error.response.data 
+        const errorMessage = typeof error.response.data === 'string'
+          ? error.response.data
           : error.response.data.message || "Error al registrar el usuario";
         setGeneralError(errorMessage);
       } else if (error.message === "Network Error") {
@@ -88,9 +83,6 @@ function Registro() {
       setLoading(false);
     }
   };
-
-  const hoy = new Date();
-  const maxDate = `${hoy.getFullYear() - 18}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
 
   return (
     <div className="main-content" style={{ background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)" }}>
@@ -155,9 +147,9 @@ function Registro() {
           </div>
 
 
-          <div className="form-floating mb-4">
+          <div className="form-floating mb-3 position-relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="form-control form-control-sm"
               placeholder="Contraseña"
               value={password}
@@ -165,7 +157,36 @@ function Registro() {
               style={{ borderColor: passwordError ? "red" : "" }}
             />
             <label>Contraseña</label>
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ zIndex: 10, background: "transparent", border: "none" }}
+            >
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+            </button>
             {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
+          </div>
+
+          <div className="form-floating mb-4 position-relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="form-control form-control-sm"
+              placeholder="Confirmar Contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{ borderColor: confirmPasswordError ? "red" : "" }}
+            />
+            <label>Confirmar Contraseña</label>
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ zIndex: 10, background: "transparent", border: "none" }}
+            >
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+            </button>
+            {confirmPasswordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{confirmPasswordError}</div>}
           </div>
 
           {generalError && (
@@ -174,8 +195,8 @@ function Registro() {
             </div>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-outline-primary w-100"
             disabled={loading}
           >
