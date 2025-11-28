@@ -11,12 +11,10 @@ function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, isAdmin } = useContext(AuthContext);
 
-  // Cerrar menú móvil al cambiar de ruta
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [navigate]);
 
-  // Cerrar menú móvil al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (mobileMenuOpen && !event.target.closest('#navmenu') && !event.target.closest('.mobile-nav-toggle')) {
@@ -31,6 +29,11 @@ function Header() {
   const handleSearch = (e) => {
     e.preventDefault();
 
+    if (busqueda.trim() === "") {
+      alert("Por favor, introduce un término de búsqueda.");
+      return;
+    }
+
     const viniloEncontrado = buscarViniloPorTitulo(vinilos, busqueda);
     const artistaEncontrado = buscarArtistaPorNombre(artistas, busqueda);
 
@@ -39,7 +42,7 @@ function Header() {
     } else if (artistaEncontrado) {
       navigate(`/productos?artista=${artistaEncontrado.id_art}`);
     } else {
-      alert("No se encontró ningún vinilo o artista con ese nombre.");
+      navigate("/productos");
     }
 
     setBusqueda("");
@@ -153,11 +156,12 @@ function Header() {
                 style={{ maxWidth: '200px' }}
               />
             </div>
+            {/* Se agrega un botón de submit oculto. Presionar Enter en el input activará el submit del formulario. */}
+            <button type="submit" style={{ display: 'none' }} aria-label="Buscar"></button>
           </form>
 
           {/* Botones desktop */}
           <div className="header-buttons d-flex align-items-center gap-3">
-            {/* Botón de carrito */}
             {/* Botón de carrito */}
             <button className="btn btn-outline-light d-flex align-items-center gap-2" onClick={() => navigate("/carrito")}>
               <i className="bi bi-cart3"></i>
