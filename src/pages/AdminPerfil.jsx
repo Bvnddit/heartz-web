@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import HeaderAdmin from "../components/HeaderAdmin";
 import Footer from "../components/Footer";
 import BarraLateralAdmin from "../components/BarraLateralAdmin";
+import { AuthContext } from "../context/AuthContext";
 
 function AdminPerfil() {
-  // Datos falsos simulados
-  const perfil = {
-    nombre: "Francisco Pereira",
-    correo: "admin@heartz.cl",
-    rol: "Administrador",
-    telefono: "+56 9 8765 4321",
-    fechaIngreso: "12 de marzo de 2024",
-    direccion: "Santiago, Chile",
-    imagen: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+  const { user } = useContext(AuthContext);
+
+  // Debug: ver qué datos tiene el usuario
+  console.log("Datos del usuario en AdminPerfil:", user);
+
+  // Imagen por defecto
+  const imagenPerfil = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+  // Obtener el nombre del rol (puede venir como string o como objeto)
+  const obtenerNombreRol = (rol) => {
+    if (typeof rol === 'object' && rol !== null) {
+      return rol.nombre || rol;
+    }
+    return rol || "Usuario";
   };
 
   return (
@@ -34,29 +40,31 @@ function AdminPerfil() {
           >
             <div className="text-center mb-4">
               <img
-                src={perfil.imagen}
+                src={imagenPerfil}
                 alt="Perfil"
                 className="rounded-circle shadow"
                 width="130"
                 height="130"
               />
-              <h3 className="mt-3">{perfil.nombre}</h3>
-              <p className="text-secondary mb-1">{perfil.correo}</p>
-              <span className="badge bg-success">{perfil.rol}</span>
+              <h3 className="mt-3">{user?.nombre || "Usuario"}</h3>
+              <p className="text-secondary mb-1">{user?.email || user?.correo || "No disponible"}</p>
+              <span className="badge bg-success">{obtenerNombreRol(user?.rol)}</span>
             </div>
 
             <hr className="border-secondary" />
 
             <div className="mt-4">
-              <p><strong>Correo:</strong> {perfil.correo}</p>
-              <p><strong>Teléfono:</strong> {perfil.telefono}</p>
-              <p><strong>Dirección:</strong> {perfil.direccion}</p>
-              <p><strong>Fecha de ingreso:</strong> {perfil.fechaIngreso}</p>
-              <p><strong>Rol:</strong> {perfil.rol}</p>
+              <p><strong>Nombre:</strong> {user?.nombre || "No disponible"}</p>
+              <p><strong>Correo:</strong> {user?.email || user?.correo || "No disponible"}</p>
+              <p><strong>Rol:</strong> {obtenerNombreRol(user?.rol)}</p>
+              <p><strong>RUT:</strong> {user?.rut || "No disponible"}</p>
             </div>
 
             <div className="text-center mt-4">
-              <button className="btn btn-outline-light px-4">Editar perfil</button>
+              <button className="btn btn-outline-light px-4" disabled>
+                Editar perfil
+              </button>
+              <small className="d-block text-secondary mt-2">Funcionalidad próximamente</small>
             </div>
           </div>
         </div>

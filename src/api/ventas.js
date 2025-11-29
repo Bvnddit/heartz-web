@@ -1,14 +1,21 @@
 import api from "./api";
 
-export const createVenta = async (ventaData) => {
-    const token = localStorage.getItem("token");
-    const config = {};
+// ----------------- VENTAS -----------------
 
-    if (token) {
-        config.headers = {
-            Authorization: `Bearer ${token}`
-        };
-    }
+// POST - Registrar una nueva venta
+export const registrarVenta = (ventaData) => api.post("/api/ventas/registrarventa", ventaData);
 
-    return await api.post("/ventas", ventaData, config);
-};
+// Alias para compatibilidad con código existente
+export const createVenta = registrarVenta;
+
+// GET - Obtener todas las ventas (para futuro uso)
+export const getVentas = () => api.get("/api/ventas");
+
+// GET - Obtener venta por ID (para futuro uso)
+export const getVentaById = (idVenta) => api.get(`/api/ventas/${idVenta}`);
+
+// GET - Obtener todas las ventas (Admin)
+export const obtenerTodasLasVentas = () => api.get("/api/ventas/obtenerventas");
+
+// GET - Obtener ventas por usuario
+export const obtenerVentasPorUsuario = (idUsuario) => api.get(`/api/ventas/obtenerventasusuario/${idUsuario}`);

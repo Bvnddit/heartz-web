@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function BarraLateralAdmin() {
+  const { isAdmin } = useContext(AuthContext);
+
   return (
     <div
       className="vh-100 p-3"
@@ -14,9 +18,11 @@ function BarraLateralAdmin() {
         <li className="nav-item">
           <Link to="/admin" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Panel</Link>
         </li>
-        <li className="nav-item">
-          <Link to="/admin-usuarios" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Usuarios</Link>
-        </li>
+        {isAdmin() && (
+          <li className="nav-item">
+            <Link to="/admin-usuarios" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Usuarios</Link>
+          </li>
+        )}
         <li className="nav-item">
           <Link to="/admin-vinilos" className="nav-link" style={{ color: "white", margin: "5px 0" }}>Vinilos</Link>
         </li>

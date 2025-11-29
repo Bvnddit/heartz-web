@@ -5,12 +5,22 @@ export const CarritoContext = createContext();
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
 
-  // Agregar producto al carrito
+  // Agregar producto al carrito con validación de stock
   const agregarProducto = (producto) => {
+    let agregado = false;
+    let mensaje = "";
+
     setCarrito((prev) => {
       const existe = prev.find((p) => p.id_vin === producto.id_vin);
       if (existe) {
-        // Si ya está, suma 1 a la cantidad
+        // Verificar si hay stock disponible
+        if (existe.cantidad >= producto.stock) {
+          mensaje = `No hay más stock disponible. Stock máximo: ${producto.stock}`;
+          agregado = false;
+          return prev; // No modificar el carrito
+        }
+        // Si hay stock, suma 1 a la cantidad
+        agregado = true;
         return prev.map((p) =>
           p.id_vin === producto.id_vin
             ? { ...p, cantidad: p.cantidad + 1 }
@@ -18,9 +28,12 @@ export const CarritoProvider = ({ children }) => {
         );
       } else {
         // Si no está, lo agrega con cantidad 1
+        agregado = true;
         return [...prev, { ...producto, cantidad: 1 }];
       }
     });
+
+    return { agregado, mensaje };
   };
 
   // Quitar 1 unidad

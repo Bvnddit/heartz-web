@@ -1,11 +1,14 @@
 import { useContext, useState } from "react";
 import { CarritoContext } from "../context/CarritoContext.jsx";
+import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useFormularioCompra, validarFormularioCompra } from "../util/Validaciones.js";
-import { createVenta } from "../api/ventas";
+import { registrarVenta } from "../api/ventas";
+import Swal from 'sweetalert2';
 
 const Compra = () => {
   const { carrito, total } = useContext(CarritoContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -23,43 +26,90 @@ const Compra = () => {
     setLoading(true);
 
     try {
-      // 2. Preparar payload para el backend
-      // Asumimos que el backend espera esta estructura. Ajustar según el modelo real.
-      const ventaData = {
-        fecha: new Date().toISOString(),
-        total: total,
-        estado: "Pendiente", // O el estado inicial que maneje el backend
-        // Datos del cliente (si el backend los guarda en la venta o crea un usuario al vuelo)
-        nombreCliente: formData.nombre,
-        apellidoCliente: formData.apellidos,
-        correoCliente: formData.correo,
-        direccionEntrega: `${formData.calle} ${formData.departamento || ""}, ${formData.comuna}, ${formData.region}`,
+      // Debug: Ver datos del usuario
+      console.log("Usuario logueado (Contexto):", user);
+      console.log("Keys del usuario:", Object.keys(user || {}));
+      console.log("ID del usuario (idUsuario):", user?.idUsuario);
+      console.log("ID del usuario (id):", user?.id);
 
-        // Detalle de la venta
-        detalleVenta: carrito.map(item => ({
-          vinilo: { id_vin: item.id_vin }, // Enviamos solo el ID del vinilo
+      // Calcular total sumando todos los items del carrito
+      const totalCalculado = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+      console.log("Total calculado:", totalCalculado);
+
+      // Validar que el usuario tenga ID
+      const userId = user?.idUsuario || user?.id;
+      if (!userId) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de sesión',
+          text: 'No se pudo identificar al usuario. Por favor, cierra sesión e ingresa nuevamente.',
+          background: '#1c1c1c',
+          color: '#fff'
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 2. Preparar payload según el modelo VentaDTO del backend
+      const ventaData = {
+        idUsuario: userId, // Backend espera idUsuario
+        total: totalCalculado,
+        direccion: formData.calle,
+        departamento: formData.departamento || "",
+        region: formData.region,
+        comuna: formData.comuna,
+        indicaciones: formData.indicaciones || "",
+
+        // Detalles de la venta (List<DetalleVentaDTO>)
+        detalles: carrito.map(item => ({
+          idVinilo: item.id_vin, // Backend espera idVinilo
           cantidad: item.cantidad,
-          precioUnitario: item.precio
+          precio: item.precio    // Backend espera precio
         }))
       };
 
-      // 3. Llamar a la API
-      const response = await createVenta(ventaData);
-      console.log("Venta creada:", response.data);
+      console.log("Enviando venta:", ventaData);
 
-      // 4. Redirigir a éxito
+      // 3. Llamar a la API
+      const response = await registrarVenta(ventaData);
+      console.log("Respuesta del backend:", response.data);
+
+      // 4. Mostrar mensaje de éxito
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Compra exitosa!',
+        text: response.data.message || 'Tu pedido ha sido procesado correctamente',
+        background: '#1c1c1c',
+        color: '#fff',
+        confirmButtonColor: '#28a745'
+      });
+
+      // 5. Redirigir a página de confirmación
       navigate("/compra-ok", {
         state: {
           ...formData,
-          total,
-          ordenId: response.data.id_venta || response.data.id || "PENDIENTE", // Ajustar según respuesta
+          total: totalCalculado,  // Usar el total calculado
+          ordenId: response.data.idVenta || response.data.id || "PENDIENTE",
           items: carrito
         }
       });
 
     } catch (error) {
       console.error("Error al procesar la compra:", error);
-      alert("Hubo un error al procesar tu compra. Por favor, intenta nuevamente.");
+      console.error("Error response:", error.response);
+
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Hubo un error al procesar tu compra. Por favor, intenta nuevamente.";
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la compra',
+        text: errorMessage,
+        background: '#1c1c1c',
+        color: '#fff',
+        confirmButtonColor: '#dc3545'
+      });
     } finally {
       setLoading(false);
     }
@@ -116,8 +166,8 @@ const Compra = () => {
 
               <div className="row mt-4">
                 <h4 className="card-title">Información del cliente</h4>
-                <div className="col-6 mb-3">
-                  <label htmlFor="nombre" className="form-label">Nombre<small className="text-danger">*</small></label>
+                <div className="col-12 col-md-6 mb-3">
+                  <label htmlFor="nombre" className="form-label">Nombre completo<small className="text-danger">*</small></label>
                   <input
                     type="text"
                     className={`form-control ${errores.nombre ? "is-invalid" : ""}`}
@@ -129,20 +179,7 @@ const Compra = () => {
                   />
                   {errores.nombre && <div className="invalid-feedback">{errores.nombre}</div>}
                 </div>
-                <div className="col-6 mb-3">
-                  <label htmlFor="apellidos" className="form-label">Apellidos<small className="text-danger">*</small></label>
-                  <input
-                    type="text"
-                    className={`form-control ${errores.apellidos ? "is-invalid" : ""}`}
-                    id="apellidos"
-                    name="apellidos"
-                    value={formData.apellidos}
-                    onChange={handleChange}
-                    required
-                  />
-                  {errores.apellidos && <div className="invalid-feedback">{errores.apellidos}</div>}
-                </div>
-                <div className="mb-3 col-6">
+                <div className="mb-3 col-12 col-md-6">
                   <label htmlFor="correo" className="form-label">Correo<small className="text-danger">*</small></label>
                   <input
                     type="email"

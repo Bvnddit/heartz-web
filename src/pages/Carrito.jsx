@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext.jsx";
+import Swal from 'sweetalert2';
 
 const Carrito = () => {
   const { carrito, agregarProducto, quitarProducto, eliminarProducto, total } = useContext(CarritoContext);
@@ -20,10 +21,24 @@ const Carrito = () => {
   const aplicarDescuento = () => {
     if (codigoDescuento.toLowerCase() === "heartz10") {
       setDescuentoAplicado(subtotal * 0.1);
-      alert("¡Código aplicado! 10% de descuento aplicado.");
+      Swal.fire({
+        icon: 'success',
+        title: '¡Código aplicado!',
+        text: '10% de descuento aplicado a tu compra',
+        background: '#1c1c1c',
+        color: '#fff',
+        confirmButtonColor: '#28a745'
+      });
     } else {
-      alert("Código de descuento inválido.");
       setDescuentoAplicado(0);
+      Swal.fire({
+        icon: 'error',
+        title: 'Código inválido',
+        text: 'El código de descuento ingresado no es válido',
+        background: '#1c1c1c',
+        color: '#fff',
+        confirmButtonColor: '#dc3545'
+      });
     }
   };
 
@@ -101,7 +116,6 @@ const Carrito = () => {
                             <h6 className="mb-1 fw-bold text-white text-truncate" style={{ maxWidth: "200px" }}>
                               {producto.titulo}
                             </h6>
-                            <p className="mb-0 text-secondary small">Vinilo 180g</p>
                             <button
                               className="btn btn-link text-danger p-0 text-decoration-none small mt-1"
                               onClick={() => eliminarProducto(producto.id_vin)}
@@ -113,21 +127,43 @@ const Carrito = () => {
 
                         {/* Cantidad (Móvil y Desktop) */}
                         <div className="col-md-3 col-6 mt-3 mt-md-0 d-flex justify-content-md-center">
-                          <div className="d-flex align-items-center bg-black rounded-pill border border-secondary border-opacity-25 px-2 py-1">
-                            <button
-                              className="btn btn-sm btn-link text-white p-0"
-                              onClick={() => quitarProducto(producto.id_vin)}
-                              disabled={producto.cantidad <= 1}
-                            >
-                              <i className="bi bi-dash"></i>
-                            </button>
-                            <span className="mx-3 text-white small fw-bold">{producto.cantidad}</span>
-                            <button
-                              className="btn btn-sm btn-link text-white p-0"
-                              onClick={() => agregarProducto(producto)}
-                            >
-                              <i className="bi bi-plus"></i>
-                            </button>
+                          <div className="d-flex flex-column align-items-center gap-2">
+                            <div className="d-flex align-items-center gap-2">
+                              <button
+                                className="btn btn-sm btn-outline-light rounded-circle d-flex align-items-center justify-content-center"
+                                style={{ width: '32px', height: '32px', fontSize: '18px', padding: 0 }}
+                                onClick={() => quitarProducto(producto.id_vin)}
+                                disabled={producto.cantidad <= 1}
+                              >
+                                −
+                              </button>
+                              <span className="text-white fw-bold px-3" style={{ minWidth: '40px', textAlign: 'center' }}>
+                                {producto.cantidad}
+                              </span>
+                              <button
+                                className="btn btn-sm btn-outline-light rounded-circle d-flex align-items-center justify-content-center"
+                                style={{ width: '32px', height: '32px', fontSize: '18px', padding: 0 }}
+                                onClick={() => {
+                                  const resultado = agregarProducto(producto);
+                                  if (!resultado.agregado && resultado.mensaje) {
+                                    Swal.fire({
+                                      icon: 'warning',
+                                      title: 'Stock limitado',
+                                      text: resultado.mensaje,
+                                      background: '#1c1c1c',
+                                      color: '#fff',
+                                      confirmButtonColor: '#ffc107'
+                                    });
+                                  }
+                                }}
+                                disabled={producto.cantidad >= producto.stock}
+                              >
+                                +
+                              </button>
+                            </div>
+                            <small className="text-secondary" style={{ fontSize: '0.7rem' }}>
+                              Stock disponible: {producto.stock}
+                            </small>
                           </div>
                         </div>
 
@@ -159,7 +195,7 @@ const Carrito = () => {
             <div className="col-lg-4">
               <div className="card border-0 bg-dark shadow-lg rounded-4 sticky-top" style={{ top: "100px" }}>
                 <div className="card-body p-4">
-                  <h4 className="card-title fw-bold mb-4">Resumen del Pedido</h4>
+                  <h4 className="card-title fw-bold mb-4 text-white">Resumen del Pedido</h4>
 
                   <div className="d-flex justify-content-between mb-2 text-secondary">
                     <span>Subtotal</span>

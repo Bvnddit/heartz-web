@@ -32,15 +32,10 @@ const Compraok = () => {
                       <label className="form-label">Nombre</label>
                       <input type="text" className="form-control" value={formData.nombre || ""} disabled />
                     </div>
-                    <div className="col-6 mb-3 col-md-4">
-                      <label className="form-label">Apellidos</label>
-                      <input type="text" className="form-control" value={formData.apellidos || ""} disabled />
-                    </div>
                     <div className="mb-3 col-6 col-md-4">
                       <label className="form-label">Correo</label>
                       <input type="email" className="form-control" value={formData.correo || ""} disabled />
                     </div>
-
                     <h5 className="card-title mt-3">Dirección de entrega</h5>
                     <div className="mb-3 col-12 col-md-6">
                       <label className="form-label">Calle</label>

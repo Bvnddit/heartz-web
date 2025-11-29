@@ -178,8 +178,9 @@ function Header() {
                   </div>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-0 mt-2">
-                  <li><span className="dropdown-item-text text-muted small">{user.email}</span></li>
+                  <li><span className="dropdown-item-text text-white small">{user.email}</span></li>
                   <li><hr className="dropdown-divider" /></li>
+                  <li><Link to="/perfil" className="dropdown-item"><i className="bi bi-person-badge me-2"></i>Mi Perfil</Link></li>
                   {isAdmin() && (
                     <li><Link to="/admin" className="dropdown-item"><i className="bi bi-speedometer2 me-2"></i>Panel Admin</Link></li>
                   )}

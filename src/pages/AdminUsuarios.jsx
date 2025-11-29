@@ -5,9 +5,10 @@ import {
   getUsuarios,
   createUsuario,
   updateUsuario,
-  deleteUsuarioByRut
+  deleteUsuarioById
 } from "../api/usuarios";
 import { validarRut, validarEmail, validarNombre } from "../util/Validaciones";
+import Swal from 'sweetalert2';
 
 const AdminUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -18,9 +19,9 @@ const AdminUsuarios = () => {
     nombre: "",
     correo: "",
     contrasena: "",
-    rol: "Cliente",
+    rol: "",
   });
-  const [editandoRut, setEditandoRut] = useState(null);
+  const [editandoId, setEditandoId] = useState(null);
   const [errores, setErrores] = useState({});
 
   // Cargar usuarios al montar el componente
@@ -33,18 +34,21 @@ const AdminUsuarios = () => {
       setLoading(true);
       setError(null);
       const response = await getUsuarios();
+      console.log("Respuesta del backend:", response.data);
       // Asegurarse de que siempre sea un array
       const data = Array.isArray(response.data) ? response.data : [];
       // Normalizar el campo rol si viene como objeto
       const usuariosNormalizados = data.map(usuario => ({
         ...usuario,
-        rol: typeof usuario.rol === 'object' && usuario.rol !== null 
-          ? usuario.rol.nombre || usuario.rol 
+        rol: typeof usuario.rol === 'object' && usuario.rol !== null
+          ? usuario.rol.nombre || usuario.rol
           : usuario.rol
       }));
+      console.log("Usuarios normalizados:", usuariosNormalizados);
       setUsuarios(usuariosNormalizados);
     } catch (err) {
       console.error("Error al cargar usuarios:", err);
+      console.error("Error completo:", err.response);
       setError("Error al cargar los usuarios. Por favor, intenta de nuevo.");
       setUsuarios([]); // Establecer array vacío en caso de error
     } finally {
@@ -74,15 +78,27 @@ const AdminUsuarios = () => {
     if (!validarFormulario()) return;
 
     try {
-      if (editandoRut) {
+      if (editandoId) {
         // Actualizar usuario existente
-        await updateUsuario(editandoRut, form);
-        alert("Usuario actualizado exitosamente");
-        setEditandoRut(null);
+        const response = await updateUsuario(editandoId, form);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.data.message || "Usuario actualizado exitosamente",
+          background: '#1c1c1c',
+          color: '#fff'
+        });
+        setEditandoId(null);
       } else {
         // Crear nuevo usuario
-        await createUsuario(form);
-        alert("Usuario creado exitosamente");
+        const response = await createUsuario(form);
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: response.data.message || "Usuario creado exitosamente",
+          background: '#1c1c1c',
+          color: '#fff'
+        });
       }
 
       // Recargar la lista de usuarios
@@ -94,53 +110,81 @@ const AdminUsuarios = () => {
         nombre: "",
         correo: "",
         contrasena: "",
-        rol: "Cliente",
+        rol: "",
       });
       setErrores({});
     } catch (err) {
       console.error("Error al guardar usuario:", err);
       console.error("Error response:", err.response);
-      console.error("Error data:", err.response?.data);
-      console.error("Error status:", err.response?.status);
 
+      let errorMessage = "Error al guardar el usuario";
       if (err.response?.status === 409) {
-        alert("Ya existe un usuario con este RUT.");
+        errorMessage = "Ya existe un usuario con este RUT.";
       } else if (err.response?.data?.message) {
-        alert(`Error: ${err.response.data.message}`);
+        errorMessage = err.response.data.message;
       } else if (err.message === "Network Error") {
-        alert("Error de conexión. Verifica que el servidor esté corriendo en http://localhost:9090");
-      } else {
-        alert(`Error al guardar el usuario: ${err.message}`);
+        errorMessage = "Error de conexión. Verifica que el servidor esté corriendo en http://localhost:9090";
       }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+        background: '#1c1c1c',
+        color: '#fff'
+      });
     }
   };
 
   const handleEditar = (usuario) => {
     // Normalizar el rol si viene como objeto
-    const rolNormalizado = typeof usuario.rol === 'object' && usuario.rol !== null 
-      ? usuario.rol.nombre || usuario.rol 
+    const rolNormalizado = typeof usuario.rol === 'object' && usuario.rol !== null
+      ? usuario.rol.nombre || usuario.rol
       : usuario.rol;
-    
+
     setForm({
       ...usuario,
       rol: rolNormalizado,
       contrasena: "" // No mostrar la contraseña al editar
     });
-    setEditandoRut(usuario.rut);
+    setEditandoId(usuario.idUsuario);
   };
 
-  const handleEliminar = async (rut) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
-      return;
-    }
+  const handleEliminar = async (idUsuario) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esto",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      background: '#1c1c1c',
+      color: '#fff'
+    });
 
-    try {
-      await deleteUsuarioByRut(rut);
-      alert("Usuario eliminado exitosamente");
-      await cargarUsuarios();
-    } catch (err) {
-      console.error("Error al eliminar usuario:", err);
-      alert("Error al eliminar el usuario. Por favor, intenta de nuevo.");
+    if (result.isConfirmed) {
+      try {
+        const response = await deleteUsuarioById(idUsuario);
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado!',
+          text: response.data?.message || "Usuario eliminado exitosamente",
+          background: '#1c1c1c',
+          color: '#fff'
+        });
+        await cargarUsuarios();
+      } catch (err) {
+        console.error("Error al eliminar usuario:", err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: "Error al eliminar el usuario. Por favor, intenta de nuevo.",
+          background: '#1c1c1c',
+          color: '#fff'
+        });
+      }
     }
   };
 
@@ -150,9 +194,9 @@ const AdminUsuarios = () => {
       nombre: "",
       correo: "",
       contrasena: "",
-      rol: "Cliente",
+      rol: "CLIENTE",
     });
-    setEditandoRut(null);
+    setEditandoId(null);
     setErrores({});
   };
 
@@ -173,7 +217,7 @@ const AdminUsuarios = () => {
 
           {/* Formulario */}
           <div style={{ backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
-            <h2>{editandoRut ? "Editar Usuario" : "Agregar Nuevo Usuario"}</h2>
+            <h2>{editandoId ? "Editar Usuario" : "Agregar Nuevo Usuario"}</h2>
             <form onSubmit={handleAgregar} className="row g-3 mt-2">
               <div className="col-md-6">
                 <input
@@ -183,7 +227,7 @@ const AdminUsuarios = () => {
                   className="form-control"
                   value={form.rut}
                   onChange={handleChange}
-                  disabled={!!editandoRut}
+                  disabled={!!editandoId}
                   required
                 />
                 {errores.rut && <small className="text-danger">{errores.rut}</small>}
@@ -234,13 +278,14 @@ const AdminUsuarios = () => {
                   value={form.rol}
                   onChange={handleChange}
                 >
-                  <option value="Cliente">Cliente</option>
-                  <option value="Empleado">Empleado</option>
+                  <option value="CLIENTE">Cliente</option>
+                  <option value="EMPLEADO">Empleado</option>
+                  <option value="ADMIN">Admin</option>
                 </select>
               </div>
 
               <div className="col-12 text-end">
-                {editandoRut && (
+                {editandoId && (
                   <button
                     type="button"
                     className="btn btn-secondary me-2"
@@ -250,7 +295,7 @@ const AdminUsuarios = () => {
                   </button>
                 )}
                 <button type="submit" className="btn btn-primary">
-                  {editandoRut ? "Guardar Cambios" : "Agregar Usuario"}
+                  {editandoId ? "Guardar Cambios" : "Agregar Usuario"}
                 </button>
               </div>
             </form>
@@ -282,13 +327,13 @@ const AdminUsuarios = () => {
                 </thead>
                 <tbody>
                   {usuarios.map((usuario) => (
-                    <tr key={usuario.rut}>
+                    <tr key={usuario.idUsuario}>
                       <td>{usuario.rut}</td>
                       <td>{usuario.nombre}</td>
                       <td>{usuario.correo}</td>
                       <td>
                         <span className={`badge ${usuario.rol === 'Empleado' ? 'bg-warning' : 'bg-info'}`}>
-                          {typeof usuario.rol === 'object' && usuario.rol !== null 
+                          {typeof usuario.rol === 'object' && usuario.rol !== null
                             ? usuario.rol.nombre || JSON.stringify(usuario.rol)
                             : usuario.rol}
                         </span>
@@ -303,7 +348,7 @@ const AdminUsuarios = () => {
                         </button>
                         <button
                           className="btn btn-sm btn-danger"
-                          onClick={() => handleEliminar(usuario.rut)}
+                          onClick={() => handleEliminar(usuario.idUsuario)}
                         >
                           <i className="bi bi-trash-fill me-1"></i>
                           Eliminar

@@ -33,24 +33,25 @@ function Login() {
       const loginData = { email, password };
       const response = await loginUsuario(loginData);
 
-      // Extraer email y rol del response como pidió el usuario
-      const { email: userEmail, rol, token } = response.data;
+      console.log("Respuesta completa del backend:", response.data);
 
-      console.log("Usuario logueado:", { email: userEmail, rol });
+      // Extraer todos los datos del usuario del response
+      const { token, ...userData } = response.data;
 
-      // Crear objeto de usuario con la información necesaria
-      const userData = {
-        email: userEmail,
-        rol: rol,
+      console.log("Datos del usuario:", userData);
+
+      // Crear objeto de usuario con toda la información
+      const userDataComplete = {
+        ...userData,
         token: token
       };
 
       // Usar el contexto de autenticación
-      const loginResult = await login(userData);
+      const loginResult = await login(userDataComplete);
 
       if (loginResult.success) {
         // Redirigir basado en el rol
-        if (rol === "ADMIN") {
+        if (userData.rol === "ADMIN" || userData.rol === "EMPLEADO") {
           navigate("/admin");
         } else {
           navigate("/");

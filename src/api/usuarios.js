@@ -5,8 +5,8 @@ import api from "./api";
 // GET todos los usuarios
 export const getUsuarios = () => api.get("/usuarios");
 
-// GET por rut
-export const getUsuarioByRut = (rut) => api.get(`/usuarios/${rut}`);
+// GET por ID
+export const getUsuarioById = (idUsuario) => api.get(`/usuarios/${idUsuario}`);
 
 // GET por correo
 export const getUsuarioByCorreo = (correo) =>
@@ -15,16 +15,16 @@ export const getUsuarioByCorreo = (correo) =>
 // Crear usuario (POST) - Para registro público (sin autenticación)
 export const createUsuario = (usuario) => api.post("/usuarios/register", usuario);
 
-// Actualizar usuario COMPLETO (PUT)
-export const updateUsuario = (rut, usuario) =>
-    api.put(`/usuarios/${rut}`, usuario);
+// Actualizar usuario COMPLETO (PUT) - Usa ID
+export const updateUsuario = (idUsuario, usuario) =>
+    api.put(`/usuarios/update/${idUsuario}`, usuario);
 
-// Actualizar usuario PARCIAL (PATCH)
-export const patchUsuario = (rut, fields) =>
-    api.patch(`/usuarios/${rut}`, fields);
+// Actualizar usuario PARCIAL (PATCH) - Usa ID
+export const patchUsuario = (idUsuario, fields) =>
+    api.patch(`/usuarios/${idUsuario}`, fields);
 
-// Eliminar por RUT
-export const deleteUsuarioByRut = (rut) => api.delete(`/usuarios/${rut}`);
+// Eliminar por ID
+export const deleteUsuarioById = (idUsuario) => api.delete(`/usuarios/${idUsuario}`);
 
 // Eliminar todos
 export const deleteAllUsuarios = () => api.delete("/usuarios/all");

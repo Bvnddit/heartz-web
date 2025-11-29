@@ -20,6 +20,8 @@ import Compraok from "./pages/Compra-ok.jsx";
 import AdminPerfil from "./pages/AdminPerfil.jsx";
 import AdminReportes from "./pages/AdminReportes.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios.jsx";
+import UsuarioPerfil from "./pages/UsuarioPerfil.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppContent() {
   const location = useLocation();
@@ -50,11 +52,23 @@ function AppContent() {
           <Route path="/compra" element={<Compra />} />
           <Route path="/compra-ok" element={<Compraok />} />
 
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-vinilos" element={<AdminVinilos />} />
-          <Route path="/admin-perfil" element={<AdminPerfil />} />
-          <Route path="/admin-reportes" element={<AdminReportes />} />
-          <Route path="/admin-usuarios" element={<AdminUsuarios />} />
+          {/* Rutas protegidas para todos los usuarios autenticados */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLEADO', 'CLIENTE']} />}>
+            <Route path="/perfil" element={<UsuarioPerfil />} />
+          </Route>
+
+          {/* Rutas protegidas para ADMIN y EMPLEADO */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLEADO']} />}>
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin-vinilos" element={<AdminVinilos />} />
+            <Route path="/admin-perfil" element={<AdminPerfil />} />
+            <Route path="/admin-reportes" element={<AdminReportes />} />
+          </Route>
+
+          {/* Rutas protegidas solo para ADMIN */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+            <Route path="/admin-usuarios" element={<AdminUsuarios />} />
+          </Route>
         </Routes>
       </div>
       {!shouldHideFooter && <Footer />}
