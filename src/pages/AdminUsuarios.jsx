@@ -123,7 +123,7 @@ const AdminUsuarios = () => {
       } else if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.message === "Network Error") {
-        errorMessage = "Error de conexión. Verifica que el servidor esté corriendo en http://localhost:9090";
+        errorMessage = "Error de conexión. Verifica que el servidor esté corriendo en http://18.216.144.119:9090";
       }
 
       Swal.fire({
