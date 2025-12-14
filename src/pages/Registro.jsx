@@ -2,6 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validarEmail, validarPassword, validarNombre, validarRut } from "../util/Validaciones.js";
 import { createUsuario } from "../api/usuarios";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
+} from "@mui/material";
+import { motion } from "framer-motion";
+import WaveBackground from "../components/WaveBackground";
 
 function Registro() {
   const navigate = useNavigate();
@@ -19,6 +29,9 @@ function Registro() {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Estado para el diálogo
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,9 +71,8 @@ function Registro() {
 
       console.log("Usuario registrado exitosamente:", response.data);
 
-      // Mostrar mensaje de éxito y redirigir al login
-      alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
-      navigate("/login");
+      // Mostrar mensaje de éxito
+      setDialogOpen(true);
 
     } catch (error) {
       console.error("Error al registrar usuario:", error);
@@ -84,16 +96,34 @@ function Registro() {
     }
   };
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    navigate("/login");
+  };
+
   return (
-    <div className="main-content" style={{ background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)" }}>
-      <div className="container d-flex justify-content-center align-items-center" style={{ paddingTop: 50 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="main-content"
+      style={{
+        background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)",
+        position: 'relative',
+        minHeight: '100vh',
+        overflow: 'hidden'
+      }}
+    >
+      <WaveBackground />
+      <div className="container d-flex justify-content-center align-items-center" style={{ paddingTop: 50, position: 'relative', zIndex: 1 }}>
         <form
           onSubmit={handleSubmit}
           style={{
             border: "2px solid black",
             borderRadius: "20px",
             padding: "30px",
-            backgroundColor: "#1f1f1f",
+            backgroundColor: "rgba(31, 31, 31, 0.9)", // slightly transparent
             boxShadow: "0 0 10px rgba(0,0,0,0.5)",
             width: "100%",
             maxWidth: "400px",
@@ -163,7 +193,7 @@ function Registro() {
               onClick={() => setShowPassword(!showPassword)}
               style={{ zIndex: 10, background: "transparent", border: "none" }}
             >
-              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} style={{ color: "#aaa" }}></i>
             </button>
             {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
           </div>
@@ -184,7 +214,7 @@ function Registro() {
               onClick={() => setShowPassword(!showPassword)}
               style={{ zIndex: 10, background: "transparent", border: "none" }}
             >
-              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} style={{ color: "#aaa" }}></i>
             </button>
             {confirmPasswordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{confirmPasswordError}</div>}
           </div>
@@ -204,7 +234,36 @@ function Registro() {
           </button>
         </form>
       </div>
-    </div>
+
+      {/* Diálogo de éxito */}
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: '#1e1e1e',
+            color: 'white',
+            border: '1px solid #333'
+          },
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: 'white' }}>
+          {"¡Registro exitoso!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: '#ccc' }}>
+            Ahora puedes iniciar sesión con tu nueva cuenta.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} autoFocus sx={{ color: '#90caf9' }}>
+            Ir al Login
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </motion.div>
   );
 }
 

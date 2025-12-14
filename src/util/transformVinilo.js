@@ -67,7 +67,7 @@ export const transformVinilo = (viniloBackend) => {
     duracion: viniloBackend.duracion,
     descripcion: viniloBackend.descripcion,
     img: imgFinal,
-    listaDeCanciones: viniloBackend.listaDeCanciones || [],
+    canciones: viniloBackend.canciones || viniloBackend.listaDeCanciones || [],
   };
 };
 

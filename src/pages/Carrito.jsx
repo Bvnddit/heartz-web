@@ -1,13 +1,30 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext.jsx";
-import Swal from 'sweetalert2';
+import { AuthContext } from "../context/AuthContext";
+import { Snackbar, Alert } from "@mui/material";
 
 const Carrito = () => {
   const { carrito, agregarProducto, quitarProducto, eliminarProducto, total } = useContext(CarritoContext);
+  const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [codigoDescuento, setCodigoDescuento] = useState("");
   const [descuentoAplicado, setDescuentoAplicado] = useState(0);
+
+  // Estado para Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   // Calcular subtotal (sin descuento)
   const subtotal = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
@@ -21,24 +38,10 @@ const Carrito = () => {
   const aplicarDescuento = () => {
     if (codigoDescuento.toLowerCase() === "heartz10") {
       setDescuentoAplicado(subtotal * 0.1);
-      Swal.fire({
-        icon: 'success',
-        title: '¡Código aplicado!',
-        text: '10% de descuento aplicado a tu compra',
-        background: '#1c1c1c',
-        color: '#fff',
-        confirmButtonColor: '#28a745'
-      });
+      showSnackbar("¡Código aplicado! 10% de descuento.", "success");
     } else {
       setDescuentoAplicado(0);
-      Swal.fire({
-        icon: 'error',
-        title: 'Código inválido',
-        text: 'El código de descuento ingresado no es válido',
-        background: '#1c1c1c',
-        color: '#fff',
-        confirmButtonColor: '#dc3545'
-      });
+      showSnackbar("El código de descuento ingresado no es válido", "error");
     }
   };
 
@@ -146,14 +149,7 @@ const Carrito = () => {
                                 onClick={() => {
                                   const resultado = agregarProducto(producto);
                                   if (!resultado.agregado && resultado.mensaje) {
-                                    Swal.fire({
-                                      icon: 'warning',
-                                      title: 'Stock limitado',
-                                      text: resultado.mensaje,
-                                      background: '#1c1c1c',
-                                      color: '#fff',
-                                      confirmButtonColor: '#ffc107'
-                                    });
+                                    showSnackbar(resultado.mensaje, "warning");
                                   }
                                 }}
                                 disabled={producto.cantidad >= producto.stock}
@@ -218,6 +214,15 @@ const Carrito = () => {
 
                   <hr className="my-4 border-secondary opacity-25" />
 
+                  <div className="d-flex justify-content-between mb-2 text-secondary small">
+                    <span>Neto</span>
+                    <span>${Math.round(totalFinal / 1.19).toLocaleString("es-CL")}</span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-4 text-secondary small">
+                    <span>IVA (19%)</span>
+                    <span>${(totalFinal - Math.round(totalFinal / 1.19)).toLocaleString("es-CL")}</span>
+                  </div>
+
                   <div className="d-flex justify-content-between mb-4 align-items-center">
                     <span className="h5 mb-0">Total a Pagar</span>
                     <span className="h3 mb-0 fw-bold text-white">${totalFinal.toLocaleString("es-CL")}</span>
@@ -251,7 +256,14 @@ const Carrito = () => {
 
                   <button
                     className="btn btn-success w-100 py-3 mb-3 fw-bold shadow-sm"
-                    onClick={() => navigate("/compra")}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        showSnackbar("Debes iniciar sesión para continuar con la compra", "warning");
+                        setTimeout(() => navigate("/login"), 1500);
+                      } else {
+                        navigate("/compra");
+                      }
+                    }}
                   >
                     PROCEDER AL PAGO
                   </button>
@@ -278,6 +290,18 @@ const Carrito = () => {
           </div>
         )}
       </div>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={closeSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

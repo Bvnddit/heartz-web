@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { artistas } from "../data/artistas";
-import { generos } from "../data/generos";
 
 export const validarEmail = (email) => {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -42,6 +40,40 @@ export const validarRut = (rut) => {
     if (dv.toUpperCase() !== dvCalculado) return "RUT inválido (dígito verificador incorrecto).";
 
     return "";
+};
+
+export const validarTexto = (texto) => {
+    // Regex que permite letras (con acentos/ñ) y espacios
+    const regex = /^[a-zA-Z\u00C0-\u00FF\s]*$/;
+    return regex.test(texto);
+};
+
+export const validarNumeroPositivo = (valor) => {
+    if (typeof valor === 'string' && valor.includes("-")) return false;
+    if (valor < 0) return false;
+    return true;
+};
+
+export const validarFormularioContacto = (formData) => {
+    const errores = {};
+
+    const errorCorreo = validarEmail(formData.correo);
+    if (errorCorreo) errores.correo = errorCorreo;
+
+    if (!formData.mensaje.trim()) errores.mensaje = "El mensaje no puede estar vacío.";
+
+    return errores;
+};
+
+export const validarFormularioUsuario = (form) => {
+    const errores = {};
+    const rutError = validarRut(form.rut);
+    if (rutError) errores.rut = rutError;
+    const nombreError = validarNombre(form.nombre);
+    if (nombreError) errores.nombre = nombreError;
+    const correoError = validarEmail(form.correo);
+    if (correoError) errores.correo = correoError;
+    return errores;
 };
 
 export const validarFormularioCompra = (formData) => {
@@ -90,17 +122,16 @@ export const useFormularioCompra = (navigate, total) => {
         }
     };
 
-    return { formData, errores, setErrores, handleChange, handleCompra };
+    return { formData, setFormData, errores, setErrores, handleChange, handleCompra };
 };
 
+// Funciones simplificadas - los datos ahora vienen de la API
 export const getArtista = (id_art) => {
-    const artista = artistas.find((a) => a.id_art === id_art);
-    return artista ? artista.nombre : "Desconocido";
+    return id_art || "Desconocido";
 };
 
 export const getGenero = (id_gen) => {
-    const genero = generos.find((g) => g.id_gen === id_gen);
-    return genero ? genero.nombre : "Sin género";
+    return id_gen || "Sin género";
 };
 
 export const filtrarPorGenero = (vinilos, filtroGenero) => {

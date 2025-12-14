@@ -6,6 +6,7 @@ import { CarritoContext } from "../context/CarritoContext.jsx";
 import { getViniloById } from "../api/vinilos";
 import { transformVinilo } from "../util/transformVinilo";
 import ImagenVinilo from "../components/ImagenVinilo";
+import { Snackbar, Alert } from "@mui/material";
 
 const ProductosDetalles = () => {
   const { agregarProducto } = useContext(CarritoContext);
@@ -16,6 +17,21 @@ const ProductosDetalles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
+
+  // Estado para Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
     const cargarVinilo = async () => {
@@ -52,7 +68,7 @@ const ProductosDetalles = () => {
 
   const handleAñadir = () => {
     agregarProducto(vinilo); // <-- agregamos al carrito
-    alert(`Añadido al carrito: ${vinilo.titulo}`);
+    showSnackbar(`Añadido al carrito: ${vinilo.titulo}`, "success");
   };
 
   const handleComprarAhora = () => {
@@ -254,9 +270,9 @@ const ProductosDetalles = () => {
                   Lista de canciones
                 </h5>
                 <div className="overflow-auto" style={{ maxHeight: "300px" }}>
-                  {vinilo.listaDeCanciones && vinilo.listaDeCanciones.length > 0 ? (
+                  {vinilo.canciones && vinilo.canciones.length > 0 ? (
                     <ol className="list-group list-group-flush">
-                      {vinilo.listaDeCanciones.map((cancion, index) => (
+                      {vinilo.canciones.map((cancion, index) => (
                         <li
                           key={index}
                           className="list-group-item bg-transparent text-light border-secondary py-2"
@@ -275,9 +291,20 @@ const ProductosDetalles = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={closeSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
 
 export default ProductosDetalles;
-

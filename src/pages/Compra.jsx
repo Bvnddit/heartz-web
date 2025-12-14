@@ -1,18 +1,119 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CarritoContext } from "../context/CarritoContext.jsx";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useFormularioCompra, validarFormularioCompra } from "../util/Validaciones.js";
 import { registrarVenta } from "../api/ventas";
-import Swal from 'sweetalert2';
+import { getUsuarioById } from "../api/usuarios";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
+} from "@mui/material";
+import comunasRegionesData from "../data/comunas-regiones.json";
 
 const Compra = () => {
   const { carrito, total } = useContext(CarritoContext);
-  const { user } = useContext(AuthContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const { formData, errores, setErrores, handleChange } = useFormularioCompra(navigate, total);
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const { formData, errores, setErrores, handleChange: originalHandleChange, setFormData } = useFormularioCompra(navigate, total);
+
+  // Cargar datos del usuario autenticado desde el backend
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user && isAuthenticated) {
+        try {
+          // Obtener el ID del usuario
+          const userId = user.idUsuario || user.id;
+
+          if (userId) {
+            // Hacer petición al backend para obtener datos frescos
+            const response = await getUsuarioById(userId);
+            const userData = response.data;
+
+            // Actualizar el formulario con los datos del backend
+            setFormData(prev => ({
+              ...prev,
+              nombre: userData.nombre || "",
+              correo: userData.correo || ""
+            }));
+          } else {
+            // Fallback: usar datos del contexto si no hay ID
+            setFormData(prev => ({
+              ...prev,
+              nombre: user.nombre || "",
+              correo: user.correo || ""
+            }));
+          }
+        } catch (error) {
+          console.error("Error al obtener datos del usuario:", error);
+          // Fallback: usar datos del contexto si falla la petición
+          setFormData(prev => ({
+            ...prev,
+            nombre: user.nombre || "",
+            correo: user.correo || ""
+          }));
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user, isAuthenticated, setFormData]);
+
+  // Derivar regiones y comunas
+  const regiones = comunasRegionesData.regiones || [];
+
+  // Custom handleChange para manejar la lógica de comunas dependientes de la región
+  const handleChangeWithRegionLogic = (e) => {
+    const { name, value } = e.target;
+
+    // Si cambia la región, reiniciamos la comuna
+    if (name === "region") {
+      setFormData(prev => ({
+        ...prev,
+        region: value,
+        comuna: "" // Reset comuna
+      }));
+    } else {
+      // Para otros campos usamos el handler original
+      if (originalHandleChange) {
+        originalHandleChange(e);
+      } else {
+        // Fallback por si originalHandleChange no está disponible como se espera (depende de la implementación del hook)
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    }
+  };
+
+  // Obtener comunas de la región seleccionada
+  const comunasDisponibles = regiones.find(r => r.region === formData.region)?.comunas || [];
+
+  // Estado para el diálogo
+  const [dialog, setDialog] = useState({
+    open: false,
+    title: "",
+    content: "",
+    onConfirm: null
+  });
+
+  const closeDialog = () => {
+    setDialog({ ...dialog, open: false });
+    if (dialog.onConfirm) {
+      dialog.onConfirm();
+    }
+  };
 
   const handleFinalizarCompra = async () => {
     // 1. Validar formulario
@@ -39,12 +140,11 @@ const Compra = () => {
       // Validar que el usuario tenga ID
       const userId = user?.idUsuario || user?.id;
       if (!userId) {
-        Swal.fire({
-          icon: 'error',
+        setDialog({
+          open: true,
           title: 'Error de sesión',
-          text: 'No se pudo identificar al usuario. Por favor, cierra sesión e ingresa nuevamente.',
-          background: '#1c1c1c',
-          color: '#fff'
+          content: 'No se pudo identificar al usuario. Por favor, cierra sesión e ingresa nuevamente.',
+          onConfirm: null
         });
         setLoading(false);
         return;
@@ -74,23 +174,20 @@ const Compra = () => {
       const response = await registrarVenta(ventaData);
       console.log("Respuesta del backend:", response.data);
 
-      // 4. Mostrar mensaje de éxito
-      await Swal.fire({
-        icon: 'success',
+      // 4. Mostrar mensaje de éxito y redirigir
+      setDialog({
+        open: true,
         title: '¡Compra exitosa!',
-        text: response.data.message || 'Tu pedido ha sido procesado correctamente',
-        background: '#1c1c1c',
-        color: '#fff',
-        confirmButtonColor: '#28a745'
-      });
-
-      // 5. Redirigir a página de confirmación
-      navigate("/compra-ok", {
-        state: {
-          ...formData,
-          total: totalCalculado,  // Usar el total calculado
-          ordenId: response.data.idVenta || response.data.id || "PENDIENTE",
-          items: carrito
+        content: response.data.message || 'Tu pedido ha sido procesado correctamente',
+        onConfirm: () => {
+          navigate("/compra-ok", {
+            state: {
+              ...formData,
+              total: totalCalculado,
+              ordenId: response.data.idVenta || response.data.id || "PENDIENTE",
+              items: carrito
+            }
+          });
         }
       });
 
@@ -102,13 +199,11 @@ const Compra = () => {
         error.response?.data?.error ||
         "Hubo un error al procesar tu compra. Por favor, intenta nuevamente.";
 
-      Swal.fire({
-        icon: 'error',
+      setDialog({
+        open: true,
         title: 'Error en la compra',
-        text: errorMessage,
-        background: '#1c1c1c',
-        color: '#fff',
-        confirmButtonColor: '#dc3545'
+        content: errorMessage,
+        onConfirm: null
       });
     } finally {
       setLoading(false);
@@ -127,8 +222,13 @@ const Compra = () => {
                     <h4 className="card-title text" >Carrito de compra</h4>
                     <p className="card-text text">Completa la siguiente información</p>
                   </div>
-                  <div className="btn btn-primary py-2 px-3" style={{ fontWeight: "bold" }}>
-                    Total a pagar: ${total.toLocaleString("es-CL")}
+                  <div className="text-end">
+                    <div className="small text-muted">
+                      Neto: ${Math.round(total / 1.19).toLocaleString("es-CL")} | IVA: ${(total - Math.round(total / 1.19)).toLocaleString("es-CL")}
+                    </div>
+                    <div className="btn btn-primary py-2 px-3 mt-1" style={{ fontWeight: "bold" }}>
+                      Total a pagar: ${total.toLocaleString("es-CL")}
+                    </div>
                   </div>
                 </div>
 
@@ -174,7 +274,8 @@ const Compra = () => {
                     id="nombre"
                     name="nombre"
                     value={formData.nombre}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
+                    disabled
                     required
                   />
                   {errores.nombre && <div className="invalid-feedback">{errores.nombre}</div>}
@@ -187,7 +288,8 @@ const Compra = () => {
                     id="correo"
                     name="correo"
                     value={formData.correo}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
+                    disabled
                     required
                   />
                   {errores.correo && <div className="invalid-feedback">{errores.correo}</div>}
@@ -202,7 +304,7 @@ const Compra = () => {
                     id="calle"
                     name="calle"
                     value={formData.calle}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
                     required
                   />
                   {errores.calle && <div className="invalid-feedback">{errores.calle}</div>}
@@ -215,7 +317,7 @@ const Compra = () => {
                     id="departamento"
                     name="departamento"
                     value={formData.departamento}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
                     placeholder="Ej: 603"
                   />
                 </div>
@@ -226,13 +328,15 @@ const Compra = () => {
                     id="region"
                     name="region"
                     value={formData.region}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
                     required
                   >
                     <option value="">Seleccione...</option>
-                    <option value="Metropolitana">Metropolitana</option>
-                    <option value="Valparaíso">Valparaíso</option>
-                    <option value="Biobío">Biobío</option>
+                    {regiones.map((reg, index) => (
+                      <option key={index} value={reg.region}>
+                        {reg.region}
+                      </option>
+                    ))}
                   </select>
                   {errores.region && <div className="invalid-feedback">{errores.region}</div>}
                 </div>
@@ -243,14 +347,16 @@ const Compra = () => {
                     id="comuna"
                     name="comuna"
                     value={formData.comuna}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
                     required
+                    disabled={!formData.region}
                   >
                     <option value="">Seleccione...</option>
-                    <option value="Santiago">Santiago</option>
-                    <option value="Providencia">Providencia</option>
-                    <option value="Viña del Mar">Viña del Mar</option>
-                    <option value="Concepción">Concepción</option>
+                    {comunasDisponibles.map((com, index) => (
+                      <option key={index} value={com}>
+                        {com}
+                      </option>
+                    ))}
                   </select>
                   {errores.comuna && <div className="invalid-feedback">{errores.comuna}</div>}
                 </div>
@@ -261,7 +367,7 @@ const Compra = () => {
                     id="indicaciones"
                     name="indicaciones"
                     value={formData.indicaciones}
-                    onChange={handleChange}
+                    onChange={handleChangeWithRegionLogic}
                     rows={3}
                     placeholder="Ej.: Entre calles, color del edificio, no tiene timbre."
                   />
@@ -289,6 +395,28 @@ const Compra = () => {
           </div>
         </div>
       </div>
+
+      {/* Diálogo de información/confirmación */}
+      <Dialog
+        open={dialog.open}
+        onClose={closeDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {dialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {dialog.content}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog} color="primary" autoFocus>
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

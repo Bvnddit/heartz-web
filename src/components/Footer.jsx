@@ -23,7 +23,6 @@ function Footer() {
                             <li><Link to="/nosotros">Sobre Nosotros</Link></li>
                             <li><Link to="/productos">Catálogo</Link></li>
                             <li><Link to="/blog">Blog Musical</Link></li>
-                            <li><Link to="/terminos">Términos de servicio</Link></li>
                         </ul>
                     </div>
 

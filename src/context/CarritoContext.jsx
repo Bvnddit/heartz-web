@@ -52,12 +52,17 @@ export const CarritoProvider = ({ children }) => {
     setCarrito((prev) => prev.filter((p) => p.id_vin !== id_vin));
   };
 
+  // Limpiar carrito
+  const limpiarCarrito = () => {
+    setCarrito([]);
+  };
+
   // Total del carrito
   const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
   return (
     <CarritoContext.Provider
-      value={{ carrito, agregarProducto, quitarProducto, eliminarProducto, total }}
+      value={{ carrito, agregarProducto, quitarProducto, eliminarProducto, limpiarCarrito, total }}
     >
       {children}
     </CarritoContext.Provider>

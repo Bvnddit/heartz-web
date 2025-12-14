@@ -3,10 +3,13 @@ import { validarEmail, validarPassword } from "../util/Validaciones.js";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { loginUsuario } from "../api/usuarios";
+import { motion } from "framer-motion";
+import WaveBackground from "../components/WaveBackground";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -73,15 +76,28 @@ function Login() {
   };
 
   return (
-    <div className="main-content" style={{ background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)" }}>
-      <div className="container d-flex justify-content-center align-items-center" style={{ paddingTop: 50 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="main-content"
+      style={{
+        background: "linear-gradient(135deg, #1c1c1c, #2a1c3b)",
+        position: 'relative',
+        minHeight: '100vh',
+        overflow: 'hidden'
+      }}
+    >
+      <WaveBackground />
+      <div className="container d-flex justify-content-center align-items-center" style={{ paddingTop: 50, position: 'relative', zIndex: 1 }}>
         <form
           onSubmit={handleSubmit}
           style={{
             border: "2px solid black",
             borderRadius: "20px",
             padding: "30px",
-            backgroundColor: "#1f1f1f",
+            backgroundColor: "rgba(31, 31, 31, 0.9)", // slightly transparent
             boxShadow: "0 0 10px rgba(0,0,0,0.5)",
             width: "100%",
             maxWidth: "400px",
@@ -108,9 +124,9 @@ function Login() {
             {emailError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{emailError}</div>}
           </div>
 
-          <div className="form-floating mb-4">
+          <div className="form-floating mb-4 position-relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="form-control form-control-sm"
               placeholder="Contraseña"
               value={password}
@@ -118,6 +134,14 @@ function Login() {
               style={{ borderColor: passwordError ? "red" : "" }}
             />
             <label>Contraseña</label>
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ zIndex: 10, background: "transparent", border: "none" }}
+            >
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} style={{ color: "#aaa" }}></i>
+            </button>
             {passwordError && <div style={{ color: "red", fontSize: "0.9em", marginTop: "5px" }}>{passwordError}</div>}
           </div>
 
@@ -137,7 +161,7 @@ function Login() {
           <p><br />¿Olvidaste tu contraseña?</p>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

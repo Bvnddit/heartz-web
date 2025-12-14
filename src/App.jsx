@@ -10,10 +10,10 @@ import Blog from "./pages/Blog";
 import Contacto from "./pages/Contacto";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
-import DetalleBlog1 from "./pages/DetalleBlog1";
-import DetalleBlog2 from "./pages/DetalleBlog2";
+import DetalleBlog from "./pages/DetalleBlog";
 import Admin from "./pages/Admin";
 import AdminVinilos from "./pages/AdminVinilos";
+import AdminBlog from "./pages/AdminBlog";
 import Carrito from "./pages/Carrito";
 import Compra from "./pages/Compra.jsx";
 import Compraok from "./pages/Compra-ok.jsx";
@@ -43,11 +43,10 @@ function AppContent() {
           <Route path="/productos/:id_vin" element={<ProductosDetalles />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<DetalleBlog />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/detalleBlog1" element={<DetalleBlog1 />} />
-          <Route path="/detalleBlog2" element={<DetalleBlog2 />} />
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/compra" element={<Compra />} />
           <Route path="/compra-ok" element={<Compraok />} />
@@ -61,6 +60,7 @@ function AppContent() {
           <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLEADO']} />}>
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin-vinilos" element={<AdminVinilos />} />
+            <Route path="/admin-blogs" element={<AdminBlog />} />
             <Route path="/admin-perfil" element={<AdminPerfil />} />
             <Route path="/admin-reportes" element={<AdminReportes />} />
           </Route>
@@ -76,9 +76,14 @@ function AppContent() {
   );
 }
 
+import ScrollToTop from "./components/ScrollToTop";
+
+// ... existing imports
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );

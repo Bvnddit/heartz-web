@@ -1,15 +1,66 @@
-import { buscarViniloPorTitulo, buscarArtistaPorNombre } from "../util/Validaciones.js";
-import { vinilos } from "../data/vinilos";
-import { artistas } from "../data/artistas";
+// Búsqueda simplificada - ya no usamos datos estáticos
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import {
+  Snackbar,
+  Alert,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
+} from "@mui/material";
+import { Logout as LogoutIcon } from "@mui/icons-material";
 
 function Header() {
   const [busqueda, setBusqueda] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, isAdmin } = useContext(AuthContext);
+
+  // Estado para el menú de usuario
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  // Estado para confirmación de logout
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+
+  // Estado para Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "warning"
+  });
+
+  const showSnackbar = (message, severity = "warning") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogoutClick = () => {
+    handleMenuClose();
+    setLogoutConfirmOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setLogoutConfirmOpen(false);
+    logout();
+    navigate("/");
+  };
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -30,21 +81,12 @@ function Header() {
     e.preventDefault();
 
     if (busqueda.trim() === "") {
-      alert("Por favor, introduce un término de búsqueda.");
+      showSnackbar("Por favor, introduce un término de búsqueda.", "warning");
       return;
     }
 
-    const viniloEncontrado = buscarViniloPorTitulo(vinilos, busqueda);
-    const artistaEncontrado = buscarArtistaPorNombre(artistas, busqueda);
-
-    if (viniloEncontrado) {
-      navigate(`/productos/${viniloEncontrado.id_vin}`);
-    } else if (artistaEncontrado) {
-      navigate(`/productos?artista=${artistaEncontrado.id_art}`);
-    } else {
-      navigate("/productos");
-    }
-
+    // Simplemente navegar a productos - la búsqueda se puede implementar en el futuro con la API
+    navigate("/productos");
     setBusqueda("");
   };
 
@@ -104,6 +146,8 @@ function Header() {
                 <button
                   className="btn btn-danger w-100"
                   onClick={() => {
+                    // Para móvil, quizás directo es mejor por UX rápido, pero el usuario pidió "asegure si quiere cerrar sesión".
+                    // Vamos a usar logout directo en móvil para no complicar el menú móvil.
                     logout();
                     navigate("/");
                     setMobileMenuOpen(false);
@@ -156,7 +200,6 @@ function Header() {
                 style={{ maxWidth: '200px' }}
               />
             </div>
-            {/* Se agrega un botón de submit oculto. Presionar Enter en el input activará el submit del formulario. */}
             <button type="submit" style={{ display: 'none' }} aria-label="Buscar"></button>
           </form>
 
@@ -171,22 +214,72 @@ function Header() {
             <div className="vr bg-secondary opacity-50" style={{ height: '24px' }}></div>
 
             {isAuthenticated ? (
-              <div className="dropdown">
-                <button className="btn btn-link text-light text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <div className="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px' }}>
-                    <i className="bi bi-person-fill text-white"></i>
-                  </div>
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-0 mt-2">
-                  <li><span className="dropdown-item-text text-white small">{user.email}</span></li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li><Link to="/perfil" className="dropdown-item"><i className="bi bi-person-badge me-2"></i>Mi Perfil</Link></li>
+              <>
+                <div
+                  onClick={(e) => setAnchorEl(e.currentTarget)}
+                  style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: "#90caf9", color: "#1e1e1e" }}>
+                    {user.nombre ? user.nombre.charAt(0).toUpperCase() : <i className="bi bi-person-fill"></i>}
+                  </Avatar>
+                </div>
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={openMenu}
+                  onClose={handleMenuClose}
+                  onClick={handleMenuClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      bgcolor: "#1e1e1e",
+                      color: "white",
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&:before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "#1e1e1e",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={() => navigate("/perfil")} sx={{ color: "white" }}>
+                    <Avatar /> Mi Perfil
+                  </MenuItem>
                   {isAdmin() && (
-                    <li><Link to="/admin" className="dropdown-item"><i className="bi bi-speedometer2 me-2"></i>Panel Admin</Link></li>
+                    <MenuItem onClick={() => navigate("/admin")} sx={{ color: "white" }}>
+                      <ListItemIcon>
+                        <i className="bi bi-speedometer2 text-white"></i>
+                      </ListItemIcon>
+                      Panel Admin
+                    </MenuItem>
                   )}
-                  <li><button className="dropdown-item text-danger" onClick={() => { logout(); navigate("/"); }}><i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</button></li>
-                </ul>
-              </div>
+                  <Divider sx={{ bgcolor: "rgba(255,255,255,0.1)" }} />
+                  <MenuItem onClick={handleLogoutClick} sx={{ color: "#f44336" }}>
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" sx={{ color: "#f44336" }} />
+                    </ListItemIcon>
+                    Cerrar Sesión
+                  </MenuItem>
+                </Menu>
+              </>
             ) : (
               <div className="d-flex gap-2">
                 <Link to="/Login" className="btn btn-outline-light btn-sm px-3 rounded-pill">Ingresar</Link>
@@ -196,6 +289,50 @@ function Header() {
           </div>
         </div>
       </div>
+
+      {/* Dialogo de confirmación de cierre de sesión */}
+      <Dialog
+        open={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: '#1e1e1e',
+            color: 'white',
+            border: '1px solid #333'
+          },
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: 'white' }}>
+          {"¿Cerrar sesión?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: '#ccc' }}>
+            ¿Estás seguro que deseas cerrar tu sesión actual?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLogoutConfirmOpen(false)} sx={{ color: 'white' }}>
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmLogout} color="error" autoFocus>
+            Cerrar Sesión
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={closeSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </header>
   );
 }

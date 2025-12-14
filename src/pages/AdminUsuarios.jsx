@@ -4,11 +4,40 @@ import BarraLateralAdmin from "../components/BarraLateralAdmin";
 import {
   getUsuarios,
   createUsuario,
-  updateUsuario,
+  patchUsuario,
   deleteUsuarioById
 } from "../api/usuarios";
-import { validarRut, validarEmail, validarNombre } from "../util/Validaciones";
-import Swal from 'sweetalert2';
+import { validarRut, validarEmail, validarNombre, validarFormularioUsuario } from "../util/Validaciones";
+
+import {
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Grid,
+  Box,
+  Typography,
+  InputAdornment
+} from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from "@mui/icons-material";
+import { motion } from "framer-motion";
 
 const AdminUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -19,15 +48,42 @@ const AdminUsuarios = () => {
     nombre: "",
     correo: "",
     contrasena: "",
-    rol: "",
+    rol: "CLIENTE",
   });
   const [editandoId, setEditandoId] = useState(null);
   const [errores, setErrores] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Estados para alertas MUI
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    title: "",
+    content: "",
+    onConfirm: null
+  });
 
   // Cargar usuarios al montar el componente
   useEffect(() => {
     cargarUsuarios();
   }, []);
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({ ...confirmDialog, open: false });
+  };
 
   const cargarUsuarios = async () => {
     try {
@@ -61,14 +117,7 @@ const AdminUsuarios = () => {
   };
 
   const validarFormulario = () => {
-    const newErrores = {};
-    const rutError = validarRut(form.rut);
-    if (rutError) newErrores.rut = rutError;
-    const nombreError = validarNombre(form.nombre);
-    if (nombreError) newErrores.nombre = nombreError;
-    const correoError = validarEmail(form.correo);
-    if (correoError) newErrores.correo = correoError;
-
+    const newErrores = validarFormularioUsuario(form);
     setErrores(newErrores);
     return Object.keys(newErrores).length === 0;
   };
@@ -80,25 +129,19 @@ const AdminUsuarios = () => {
     try {
       if (editandoId) {
         // Actualizar usuario existente
-        const response = await updateUsuario(editandoId, form);
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: response.data.message || "Usuario actualizado exitosamente",
-          background: '#1c1c1c',
-          color: '#fff'
-        });
+        const dataToUpdate = { ...form };
+        // Al editar, si no hay contraseña o el campo está oculto, no la enviamos para no sobrescribirla
+        if (!dataToUpdate.contrasena) {
+          delete dataToUpdate.contrasena;
+        }
+
+        const response = await patchUsuario(editandoId, dataToUpdate);
+        showSnackbar(response.data.message || "Usuario actualizado exitosamente", "success");
         setEditandoId(null);
       } else {
         // Crear nuevo usuario
         const response = await createUsuario(form);
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: response.data.message || "Usuario creado exitosamente",
-          background: '#1c1c1c',
-          color: '#fff'
-        });
+        showSnackbar(response.data.message || "Usuario creado exitosamente", "success");
       }
 
       // Recargar la lista de usuarios
@@ -110,7 +153,7 @@ const AdminUsuarios = () => {
         nombre: "",
         correo: "",
         contrasena: "",
-        rol: "",
+        rol: "CLIENTE",
       });
       setErrores({});
     } catch (err) {
@@ -126,13 +169,7 @@ const AdminUsuarios = () => {
         errorMessage = "Error de conexión. Verifica que el servidor esté corriendo en http://18.216.144.119:9090";
       }
 
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: errorMessage,
-        background: '#1c1c1c',
-        color: '#fff'
-      });
+      showSnackbar(errorMessage, "error");
     }
   };
 
@@ -150,41 +187,24 @@ const AdminUsuarios = () => {
     setEditandoId(usuario.idUsuario);
   };
 
-  const handleEliminar = async (idUsuario) => {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esto",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      background: '#1c1c1c',
-      color: '#fff'
+  const handleEliminar = (idUsuario) => {
+    setConfirmDialog({
+      open: true,
+      title: "¿Estás seguro?",
+      content: "No podrás revertir esto",
+      onConfirm: () => ejecutarEliminacion(idUsuario)
     });
+  };
 
-    if (result.isConfirmed) {
-      try {
-        const response = await deleteUsuarioById(idUsuario);
-        Swal.fire({
-          icon: 'success',
-          title: 'Eliminado!',
-          text: response.data?.message || "Usuario eliminado exitosamente",
-          background: '#1c1c1c',
-          color: '#fff'
-        });
-        await cargarUsuarios();
-      } catch (err) {
-        console.error("Error al eliminar usuario:", err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: "Error al eliminar el usuario. Por favor, intenta de nuevo.",
-          background: '#1c1c1c',
-          color: '#fff'
-        });
-      }
+  const ejecutarEliminacion = async (idUsuario) => {
+    closeConfirmDialog();
+    try {
+      const response = await deleteUsuarioById(idUsuario);
+      showSnackbar(response.data?.message || "Usuario eliminado exitosamente", "success");
+      await cargarUsuarios();
+    } catch (err) {
+      console.error("Error al eliminar usuario:", err);
+      showSnackbar(err.response?.data?.message || "Error al eliminar el usuario. Es posible que tenga registros asociados.", "error");
     }
   };
 
@@ -200,8 +220,28 @@ const AdminUsuarios = () => {
     setErrores({});
   };
 
+  // Estilos personalizados para inputs oscuros
+  const inputStyle = {
+    '& .MuiOutlinedInput-root': {
+      color: 'white',
+      '& fieldset': { borderColor: '#555' },
+      '&:hover fieldset': { borderColor: '#aaa' },
+      '&.Mui-focused fieldset': { borderColor: '#90caf9' },
+    },
+    '& .MuiInputLabel-root': { color: '#aaa' },
+    '& .MuiInputLabel-root.Mui-focused': { color: '#90caf9' },
+    '& .MuiSelect-icon': { color: 'white' }
+  };
+
   return (
-    <div className="admin-page" style={{ minHeight: "100vh", background: 'linear-gradient(135deg, #1c1c1c, #2a1c3b)' }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="admin-page"
+      style={{ minHeight: "100vh", background: 'linear-gradient(135deg, #1c1c1c, #2a1c3b)' }}
+    >
       <HeaderAdmin titulo="Panel Administrador — Usuarios" />
       <div className="d-flex">
         <BarraLateralAdmin />
@@ -209,100 +249,114 @@ const AdminUsuarios = () => {
         <div className="admin-content flex-grow-1 p-4 text-light">
           {/* Mensajes de error global */}
           {error && (
-            <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
               {error}
-              <button type="button" className="btn-close" onClick={() => setError(null)}></button>
-            </div>
+            </Alert>
           )}
 
           {/* Formulario */}
-          <div style={{ backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
-            <h2>{editandoId ? "Editar Usuario" : "Agregar Nuevo Usuario"}</h2>
-            <form onSubmit={handleAgregar} className="row g-3 mt-2">
-              <div className="col-md-6">
-                <input
-                  type="text"
-                  name="rut"
-                  placeholder="RUT (ej: 12345678-9)"
-                  className="form-control"
-                  value={form.rut}
-                  onChange={handleChange}
-                  disabled={!!editandoId}
-                  required
-                />
-                {errores.rut && <small className="text-danger">{errores.rut}</small>}
-              </div>
-
-              <div className="col-md-6">
-                <input
-                  type="text"
-                  name="nombre"
-                  placeholder="Nombre"
-                  className="form-control"
-                  value={form.nombre}
-                  onChange={handleChange}
-                  required
-                />
-                {errores.nombre && <small className="text-danger">{errores.nombre}</small>}
-              </div>
-
-              <div className="col-md-6">
-                <input
-                  type="email"
-                  name="correo"
-                  placeholder="Correo"
-                  className="form-control"
-                  value={form.correo}
-                  onChange={handleChange}
-                  required
-                />
-                {errores.correo && <small className="text-danger">{errores.correo}</small>}
-              </div>
-
-              <div className="col-md-6">
-                <input
-                  type="password"
-                  name="contrasena"
-                  placeholder="Contraseña"
-                  className="form-control"
-                  value={form.contrasena}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="col-md-6">
-                <select
-                  name="rol"
-                  className="form-select"
-                  value={form.rol}
-                  onChange={handleChange}
-                >
-                  <option value="CLIENTE">Cliente</option>
-                  <option value="EMPLEADO">Empleado</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
-
-              <div className="col-12 text-end">
-                {editandoId && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary me-2"
-                    onClick={handleCancelar}
-                  >
-                    Cancelar
-                  </button>
+          <Paper
+            elevation={3}
+            sx={{
+              backgroundColor: "#1e1e1e",
+              padding: "20px",
+              borderRadius: "10px",
+              marginBottom: "20px",
+              color: "white"
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              {editandoId ? "Editar Usuario" : "Agregar Nuevo Usuario"}
+            </Typography>
+            <form onSubmit={handleAgregar}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="RUT"
+                    name="rut"
+                    value={form.rut}
+                    onChange={handleChange}
+                    disabled={!!editandoId}
+                    error={!!errores.rut}
+                    helperText={errores.rut}
+                    sx={inputStyle}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Nombre"
+                    name="nombre"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    error={!!errores.nombre}
+                    helperText={errores.nombre}
+                    sx={inputStyle}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Correo"
+                    name="correo"
+                    type="email"
+                    value={form.correo}
+                    onChange={handleChange}
+                    error={!!errores.correo}
+                    helperText={errores.correo}
+                    sx={inputStyle}
+                  />
+                </Grid>
+                {!editandoId && (
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Contraseña"
+                      name="contrasena"
+                      type="password"
+                      value={form.contrasena}
+                      onChange={handleChange}
+                      sx={inputStyle}
+                    />
+                  </Grid>
                 )}
-                <button type="submit" className="btn btn-primary">
-                  {editandoId ? "Guardar Cambios" : "Agregar Usuario"}
-                </button>
-              </div>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth sx={inputStyle}>
+                    <InputLabel>Rol</InputLabel>
+                    <Select
+                      name="rol"
+                      value={form.rol}
+                      label="Rol"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="CLIENTE">Cliente</MenuItem>
+                      <MenuItem value="EMPLEADO">Empleado</MenuItem>
+                      <MenuItem value="ADMIN">Admin</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: 'right' }}>
+                  {editandoId && (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={handleCancelar}
+                      sx={{ mr: 2, color: 'white', borderColor: 'white' }}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
+                  <Button type="submit" variant="contained" color="primary">
+                    {editandoId ? "Guardar Cambios" : "Agregar Usuario"}
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
-          </div>
+          </Paper>
 
           {/* Tabla */}
-          <div className="table-responsive">
+          <TableContainer component={Paper} sx={{ backgroundColor: "#1e1e1e", color: "white" }}>
             {loading ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-light" role="status">
@@ -315,54 +369,127 @@ const AdminUsuarios = () => {
                 <p className="text-white-50">No hay usuarios registrados.</p>
               </div>
             ) : (
-              <table className="table table-dark table-striped text-center">
-                <thead>
-                  <tr>
-                    <th>RUT</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuarios.map((usuario) => (
-                    <tr key={usuario.idUsuario}>
-                      <td>{usuario.rut}</td>
-                      <td>{usuario.nombre}</td>
-                      <td>{usuario.correo}</td>
-                      <td>
-                        <span className={`badge ${usuario.rol === 'Empleado' ? 'bg-warning' : 'bg-info'}`}>
-                          {typeof usuario.rol === 'object' && usuario.rol !== null
-                            ? usuario.rol.nombre || JSON.stringify(usuario.rol)
-                            : usuario.rol}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-outline-light me-2"
-                          onClick={() => handleEditar(usuario)}
+
+              <>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Buscar por nombre..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{
+                    mb: 2,
+                    backgroundColor: "#2c2c2c",
+                    borderRadius: "5px",
+                    "& .MuiOutlinedInput-root": {
+                      color: "white",
+                      "& fieldset": { borderColor: "#555" },
+                      "&:hover fieldset": { borderColor: "#aaa" },
+                      "&.Mui-focused fieldset": { borderColor: "#90caf9" },
+                    },
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: "#aaa" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ color: '#90caf9', fontWeight: 'bold' }}>RUT</TableCell>
+                      <TableCell sx={{ color: '#90caf9', fontWeight: 'bold' }}>Nombre</TableCell>
+                      <TableCell sx={{ color: '#90caf9', fontWeight: 'bold' }}>Correo</TableCell>
+                      <TableCell sx={{ color: '#90caf9', fontWeight: 'bold' }}>Rol</TableCell>
+                      <TableCell sx={{ color: '#90caf9', fontWeight: 'bold' }} align="center">Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {usuarios
+                      .filter((usuario) =>
+                        usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+                      )
+                      .map((usuario) => (
+                        <TableRow
+                          key={usuario.idUsuario}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.05)' } }}
                         >
-                          <i className="bi bi-pencil-fill me-1"></i>
-                          Editar
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleEliminar(usuario.idUsuario)}
-                        >
-                          <i className="bi bi-trash-fill me-1"></i>
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          <TableCell component="th" scope="row" sx={{ color: 'white' }}>
+                            {usuario.rut}
+                          </TableCell>
+                          <TableCell sx={{ color: 'white' }}>{usuario.nombre}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>{usuario.correo}</TableCell>
+                          <TableCell sx={{ color: 'white' }}>
+                            <span className={`badge ${usuario.rol === 'EMPLEADO' ? 'bg-warning' : usuario.rol === 'ADMIN' ? 'bg-danger' : 'bg-info'}`}>
+                              {typeof usuario.rol === 'object' && usuario.rol !== null
+                                ? usuario.rol.nombre || JSON.stringify(usuario.rol)
+                                : usuario.rol}
+                            </span>
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton onClick={() => handleEditar(usuario)} sx={{ color: '#4fc3f7' }}>
+                              <EditIcon />
+                            </IconButton>
+                            <IconButton onClick={() => handleEliminar(usuario.idUsuario)} sx={{ color: '#f44336' }}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </>
             )}
-          </div>
+          </TableContainer>
         </div>
       </div>
-    </div>
+
+      {/* Snackbar para notificaciones */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={closeSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Diálogo de confirmación */}
+      <Dialog
+        open={confirmDialog.open}
+        onClose={closeConfirmDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: '#1e1e1e',
+            color: 'white',
+            border: '1px solid #333'
+          },
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: 'white' }}>
+          {confirmDialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: '#ccc' }}>
+            {confirmDialog.content}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeConfirmDialog} sx={{ color: 'white' }}>
+            Cancelar
+          </Button>
+          <Button onClick={confirmDialog.onConfirm} color="error" autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </motion.div >
   );
 };
 

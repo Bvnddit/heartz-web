@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { obtenerVentasPorUsuario } from '../api/ventas';
+import { Alert } from '@mui/material';
 
 const UsuarioPerfil = () => {
     const { user, logout } = useContext(AuthContext);
@@ -116,7 +117,7 @@ const UsuarioPerfil = () => {
                                     <div className="animate__animated animate__fadeIn">
                                         <h4 className="mb-3">Historial de Compras</h4>
                                         {ventas.length === 0 ? (
-                                            <div className="alert alert-info">No has realizado ninguna compra aún.</div>
+                                            <Alert severity="info">No has realizado ninguna compra aún.</Alert>
                                         ) : (
                                             <div className="table-responsive">
                                                 <table className="table table-dark table-hover align-middle">

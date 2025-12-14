@@ -1,40 +1,92 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import radioheadImg from '../assets/img/default/Radiohead-Tour.webp';
-import gamImg from '../assets/img/default/gam.jpg';
+import { getAllBlogs } from "../api/blogs";
 
 function Blog() {
-  const posts = [
-    {
-      id: 1,
-      titulo: "Radiohead anuncia su regreso a los escenarios luego de 7 años de ausencia",
-      descripcion: "La última gira de Radiohead fue la llamada A Moon Shaped Pool, que inició en 2016 y finalizó en 2018 luego de eso la banda se tomó un descanso de 7 años que finalmente acabó. Radiohead acaba de anunciar nuevas fechas de conciertos en Europa para la temporada invernal, entre noviembre y diciembre del 2025.",
-      img: radioheadImg,
-      ruta: "/detalleBlog1",
-    },
-    {
-      id: 2,
-      titulo: "El Día del Vinilo regresa con todo en el GAM",
-      descripcion: "Este 9 de agosto, el Centro Cultural Gabriela Mistral (GAM) será sede de la cuarta edición del Día del Vinilo en Chile. El evento —abierto y gratuito— reunirá a sellos, disquerías, coleccionistas y marcas como Selknam Records, Punto Musical, Sony Music, Universal y sellos independientes como Fisura y Aula Records. Habrá una feria de vinilos, lanzamientos exclusivos (como La Sangre en el Cuerpo de Los Tres y La Medicina de Los Tetas), escuchas comentadas por los propios artistas y firmas de discos: una celebración imperdible para los amantes del formato analógico.",
-      img: gamImg,
-      ruta: "/detalleBlog2",
-    },
-  ];
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadBlogs();
+  }, []);
+
+  const loadBlogs = async () => {
+    try {
+      const response = await getAllBlogs();
+      setPosts(response.data);
+    } catch (err) {
+      console.error("Error al cargar los blogs:", err);
+      setError("No se pudieron cargar los blogs.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container my-5 text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container my-5 text-center">
+        <div className="alert alert-danger">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container my-5">
-      {posts.map(post => (
-        <Link key={post.id} to={post.ruta} className="text-decoration-none">
-          <div className="row mb-5 align-items-center bg-dark text-white p-3 rounded shadow-sm">
-            <div className="col-md-5 text-center mb-3 mb-md-0">
-              <img src={post.img} alt={post.titulo} className="img-fluid rounded" />
+      <h2 className="text-center mb-5 display-4 fw-bold gradient-text">Nuestras Últimas Noticias</h2>
+
+      {posts.length === 0 ? (
+        <div className="text-center">
+          <p className="fs-5 text-muted">No hay blogs disponibles en este momento.</p>
+        </div>
+      ) : (
+        <div className="row g-4">
+          {posts.map(post => (
+            <div key={post.id} className="col-12">
+              <Link to={`/blog/${post.id}`} className="text-decoration-none text-reset">
+                <div className="card h-100 border-0 shadow-sm overflow-hidden hover-card bg-dark text-white">
+                  <div className="row g-0 align-items-center">
+                    <div className="col-md-5 position-relative overflow-hidden" style={{ minHeight: '300px' }}>
+                      <img
+                        src={post.img || 'https://via.placeholder.com/600x400?text=No+Image'}
+                        alt={post.titulo}
+                        className="img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0 zoom-effect"
+                      />
+                    </div>
+                    <div className="col-md-7">
+                      <div className="card-body p-4 p-lg-5">
+                        <small className="text-primary fw-bold text-uppercase mb-2 d-block">Noticias</small>
+                        <h3 className="card-title fw-bold mb-3">{post.titulo}</h3>
+                        <p className="card-text text-white-50 fs-5 d-none d-md-block" style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: '3',
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {post.descripcion}
+                        </p>
+                        <div className="mt-4">
+                          <span className="btn btn-outline-light rounded-pill px-4">Leer más</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
-            <div className="col-md-7">
-              <h3>{post.titulo}</h3>
-              <p className="mt-3">{post.descripcion}</p>
-            </div>
-          </div>
-        </Link>
-      ))}
+          ))}
+        </div>
+      )}
     </div>
   );
 }
